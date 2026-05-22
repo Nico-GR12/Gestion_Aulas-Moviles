@@ -1,0 +1,1848 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Aulas Móviles SENA</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap');
+
+  :root {
+    --bg: #0f1117;
+    --surface: #1a1d27;
+    --surface2: #22263a;
+    --border: #2e3350;
+    --text: #e8eaf6;
+    --muted: #b8bfd9;
+    --accent: #39d0a0;
+    --accent2: #5b8cff;
+    --warn: #ffb347;
+    --danger: #ff5f7e;
+
+    --ove283: #5b8cff;
+    --ove265: #39d0a0;
+    --oja144: #ff9f5b;
+
+    --programado: #39d0a0;
+    --no-programado: #ff5f7e;
+    --por-programar: #7b82b0;
+    --no-programar: #ffb347;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
+
+  /* ── HEADER ── */
+  header {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 1rem 1.5rem; background: var(--surface);
+    border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 100;
+  }
+  header h1 { font-size: 1.1rem; font-weight: 700; letter-spacing: -.02em; }
+  header h1 span { color: var(--accent); }
+  .header-actions { display: flex; gap: .5rem; }
+
+  /* ── BOTONES ── */
+  button {
+    font-family: 'DM Sans', sans-serif; font-size: .85rem; font-weight: 500;
+    border: none; border-radius: 8px; cursor: pointer; transition: all .15s;
+  }
+  .btn-primary { background: var(--accent); color: #0f1117; padding: .5rem 1rem; }
+  .btn-primary:hover { filter: brightness(1.1); }
+  .btn-ghost { background: transparent; color: var(--muted); border: 1px solid var(--border); padding: .5rem 1rem; }
+  .btn-ghost:hover { background: var(--surface2); color: var(--text); }
+  .btn-danger { background: var(--danger); color: white; padding: .4rem .8rem; font-size: .8rem; }
+  .btn-sm { padding: .35rem .7rem; font-size: .78rem; }
+
+  /* ── FILTROS ── */
+  .filters {
+    display: flex; align-items: center; gap: .75rem; padding: .75rem 1.5rem;
+    background: var(--surface); border-bottom: 1px solid var(--border); flex-wrap: wrap;
+  }
+  .filters label { font-size: .8rem; color: var(--muted); font-weight: 500; }
+  .filters input[type=month], .filters select, .search-input {
+    background: var(--surface2); border: 1px solid var(--border); color: var(--text);
+    border-radius: 8px; padding: .4rem .7rem; font-size: .85rem; font-family: 'DM Sans', sans-serif;
+  }
+  .search-input { min-width: 200px; }
+  .search-input::placeholder { color: var(--muted); opacity: .6; }
+  .search-input:focus { outline: none; border-color: var(--accent2); }
+  .legend { display: flex; gap: .8rem; margin-left: auto; flex-wrap: wrap; }
+  .legend-item { display: flex; align-items: center; gap: .35rem; font-size: .75rem; color: var(--muted); }
+  .legend-dot { width: 8px; height: 8px; border-radius: 50%; }
+
+  /* ── AULAS TABS ── */
+  .aulas-tabs {
+    display: flex; gap: 0; background: var(--surface); border-bottom: 1px solid var(--border);
+  }
+  .tab {
+    padding: .7rem 1.5rem; font-size: .85rem; font-weight: 600; cursor: pointer;
+    border-bottom: 2px solid transparent; color: var(--muted); transition: all .2s;
+    display: flex; align-items: center; gap: .4rem;
+  }
+  .tab.active { color: var(--text); }
+  .tab.ove283.active { border-color: var(--ove283); color: var(--ove283); }
+  .tab.ove265.active { border-color: var(--ove265); color: var(--ove265); }
+  .tab.oja144.active { border-color: var(--oja144); color: var(--oja144); }
+  .tab-dot { width: 8px; height: 8px; border-radius: 50%; }
+  .tab.ove283 .tab-dot { background: var(--ove283); }
+  .tab.ove265 .tab-dot { background: var(--ove265); }
+  .tab.oja144 .tab-dot { background: var(--oja144); }
+
+  /* ── MAIN LAYOUT ── */
+  .main { display: flex; height: calc(100vh - 140px); overflow: hidden; }
+
+  /* ── CALENDARIO ── */
+  .calendar-section { flex: 1; overflow-y: auto; padding: 1.2rem 1.5rem; }
+  .cal-nav { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem; }
+  .cal-nav h2 { font-size: 1rem; font-weight: 600; text-transform: capitalize; }
+  .cal-nav button { background: var(--surface2); border: 1px solid var(--border); color: var(--text); width: 32px; height: 32px; border-radius: 8px; font-size: 1rem; }
+  .cal-nav button:hover { background: var(--border); }
+
+  .calendar-grid {
+    display: grid; grid-template-columns: repeat(7, 1fr);
+    gap: 3px; background: var(--border); border-radius: 12px; overflow: hidden;
+    border: 1px solid var(--border);
+  }
+  .cal-day-header {
+    background: var(--surface); text-align: center; padding: .5rem;
+    font-size: .72rem; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: .05em;
+  }
+  .cal-day {
+    background: var(--surface); min-height: 80px; padding: .4rem;
+    cursor: pointer; transition: background .15s; position: relative;
+  }
+  .cal-day:hover { background: var(--surface2); }
+  .cal-day.other-month { opacity: .35; }
+  .cal-day.today { background: #1e2235; }
+  .cal-day.today .day-num { color: var(--accent); font-weight: 700; }
+  .cal-day.selected { background: var(--surface2); outline: 2px solid var(--accent2); outline-offset: -2px; }
+  .day-num { font-size: .78rem; font-weight: 600; color: var(--muted); margin-bottom: .25rem; }
+  .day-events { display: flex; flex-direction: column; gap: 2px; }
+  .day-pill {
+    font-size: .65rem; font-weight: 500; padding: 1px 5px; border-radius: 4px;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%;
+  }
+  .day-pill.programado { background: rgba(57,208,160,.15); color: var(--programado); }
+  .day-pill.no-programado { background: rgba(255,95,126,.15); color: var(--no-programado); }
+  .day-pill.por-programar { background: rgba(123,130,176,.15); color: var(--por-programar); }
+  .day-pill.no-programar { background: rgba(255,179,71,.15); color: var(--no-programar); }
+  .day-pill.pendiente { background: rgba(255,179,71,.14); color: #ffb347; }
+  .day-more { font-size: .62rem; color: var(--muted); padding-left: 4px; }
+  .cal-day.holiday { background: rgba(255,95,126,.08); }
+  .cal-day.holiday:hover { background: rgba(255,95,126,.15); }
+  .holiday-chip { display: block; margin-top: .35rem; font-size: .65rem; font-weight: 700; color: var(--danger); }
+
+  /* ── PANEL LATERAL ── */
+  .side-panel {
+    width: 360px; background: var(--surface); border-left: 1px solid var(--border);
+    overflow-y: auto; display: flex; flex-direction: column;
+  }
+  .panel-header {
+    padding: 1rem 1.2rem; border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0;
+    background: var(--surface); z-index: 10;
+  }
+  .panel-header h3 { font-size: .9rem; font-weight: 600; }
+  .panel-date { font-size: .8rem; color: var(--muted); font-family: 'DM Mono', monospace; }
+
+  .panel-empty { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: .5rem; color: var(--muted); padding: 2rem; text-align: center; }
+  .panel-empty svg { opacity: .3; }
+
+  .session-card {
+    padding: .85rem 1.2rem; border-bottom: 1px solid var(--border);
+    cursor: pointer; transition: background .15s; position: relative;
+  }
+  .session-card:hover { background: var(--surface2); }
+  .session-card .sc-top { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: .4rem; }
+  .session-card .sc-programa { font-size: .82rem; font-weight: 600; line-height: 1.3; flex: 1; margin-right: .5rem; }
+  .session-card .sc-badge {
+    font-size: .65rem; font-weight: 700; padding: 2px 7px; border-radius: 20px;
+    white-space: nowrap; flex-shrink: 0;
+  }
+  .sc-badge.programado { background: rgba(57,208,160,.2); color: var(--programado); }
+  .sc-badge.no-programado { background: rgba(255,95,126,.2); color: var(--no-programado); }
+  .sc-badge.por-programar { background: rgba(123,130,176,.2); color: var(--por-programar); }
+  .sc-badge.no-programar { background: rgba(255,179,71,.2); color: var(--no-programar); }
+  .sc-badge.pendiente { background: rgba(255,179,71,.2); color: #ffb347; }
+  .session-card .sc-meta { font-size: .75rem; color: var(--muted); display: flex; flex-wrap: wrap; gap: .3rem .8rem; }
+  .sc-meta span { display: flex; align-items: center; gap: .25rem; }
+  /* ── MODAL ── */
+  .modal-overlay {
+    position: fixed; inset: 0; background: rgba(0,0,0,.7); z-index: 200;
+    display: flex; align-items: center; justify-content: center; padding: 1rem;
+    opacity: 0; pointer-events: none; transition: opacity .2s;
+  }
+  .modal-overlay.open { opacity: 1; pointer-events: all; }
+  .modal {
+    background: var(--surface); border: 1px solid var(--border); border-radius: 16px;
+    width: 100%; max-width: 580px; max-height: 90vh; overflow-y: auto;
+    transform: translateY(20px); transition: transform .2s;
+  }
+  .modal-overlay.open .modal { transform: translateY(0); }
+  .modal-header { padding: 1.2rem 1.5rem; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; }
+  .modal-header h3 { font-size: 1rem; font-weight: 700; }
+  .modal-close { background: var(--surface2); border: none; color: var(--muted); width: 28px; height: 28px; border-radius: 8px; font-size: 1.1rem; cursor: pointer; }
+  .modal-body { padding: 1.2rem 1.5rem; display: grid; grid-template-columns: 1fr 1fr; gap: .9rem; }
+  .form-group { display: flex; flex-direction: column; gap: .3rem; }
+  .form-group.full { grid-column: 1 / -1; }
+  .form-group label { font-size: .75rem; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: .05em; }
+  .form-group input, .form-group select, .form-group textarea {
+    background: var(--surface2); border: 1px solid var(--border); color: var(--text);
+    border-radius: 8px; padding: .5rem .75rem; font-size: .85rem; font-family: 'DM Sans', sans-serif;
+    transition: border-color .15s;
+  }
+  .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+    outline: none; border-color: var(--accent2);
+  }
+  .form-group textarea { resize: vertical; min-height: 60px; }
+  .dias-container { display: flex; gap: .45rem; flex-wrap: wrap; }
+  .dia-check { display: flex; align-items: center; gap: .25rem; padding: .4rem .75rem; background: var(--card-bg); border: 1px solid var(--border); border-radius: 6px; cursor: pointer; font-size: .85rem; transition: border-color .15s; user-select: none; }
+  .dia-check:has(input:checked) { border-color: var(--accent2); background: color-mix(in srgb, var(--accent2) 15%, var(--card-bg)); }
+  .dia-check input { accent-color: var(--accent2); width: 14px; height: 14px; }
+  .modal-footer { padding: 1rem 1.5rem; border-top: 1px solid var(--border); display: flex; justify-content: flex-end; gap: .5rem; }
+
+  .view-tabs { display: flex; gap: .6rem; margin-top: .5rem; }
+  .view-tab {
+    padding: .55rem 1rem; border-radius: 10px; border: 1px solid var(--border);
+    background: var(--surface2); color: var(--text); cursor: pointer; font-weight: 600;
+  }
+  .view-tab.active { background: var(--accent); color: #0f1117; border-color: transparent; }
+
+  .hidden { display: none !important; }
+  .list-section { flex: 1; overflow-y: auto; padding: 1.2rem 1.5rem; }
+  .list-top { display: flex; align-items: center; justify-content: space-between; gap: 1rem; flex-wrap: wrap; margin-bottom: 1rem; }
+  .list-top .panel-date { margin-top: .4rem; }
+  .list-content { display: grid; gap: .9rem; }
+  .list-card { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 1rem 1.2rem; }
+  .list-card h4 { font-size: .95rem; margin-bottom: .5rem; }
+  .list-heading h4 { margin: 1rem 0 .45rem; color: var(--text); font-size: .9rem; }
+  .list-card .list-meta { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .5rem .9rem; font-size: .82rem; color: var(--muted); }
+  .list-card .list-meta span { display: flex; gap: .35rem; align-items: center; }
+  .list-card .list-tags { display: flex; flex-wrap: wrap; gap: .45rem; margin-top: .75rem; }
+  .list-card .list-actions { display: flex; gap: .5rem; margin-top: .9rem; flex-wrap: wrap; }
+  .list-card .list-actions button {
+    padding: .4rem .75rem; border-radius: 10px;
+    display: inline-flex; align-items: center; justify-content: center;
+    font-size: .8rem; transition: all .2s; gap: .35rem;
+  }
+  .list-card .list-actions button:hover { filter: brightness(1.15); transform: scale(1.04); }
+  .btn-icon {
+    width: 36px; height: 36px; padding: 0; border-radius: 10px;
+    display: inline-flex; align-items: center; justify-content: center;
+    font-size: .9rem; transition: all .2s; gap: .35rem;
+  }
+  .btn-icon.btn-ghost:hover { background: var(--accent2); color: white; }
+  .btn-icon.btn-danger:hover { filter: brightness(1.2); transform: scale(1.08); }
+  .btn-icon.has-text { width: auto; padding: 0 .85rem; font-size: .8rem; gap: .35rem; }
+  .sc-actions { display: flex; gap: .5rem; margin-top: .6rem; }
+  .sc-actions button { font-size: .8rem; padding: .35rem .75rem; border-radius: 8px; display: inline-flex; align-items: center; gap: .35rem; transition: all .2s; }
+  .sc-actions .btn-ghost:hover { background: var(--accent2); color: white; }
+  .sc-actions .btn-danger:hover { filter: brightness(1.2); transform: scale(1.05); }
+  .list-card .tag { padding: .35rem .65rem; border-radius: 999px; font-size: .75rem; font-weight: 700; background: rgba(123,130,176,.12); color: var(--muted); }
+  .list-card .tag.status { background: rgba(57,208,160,.12); color: var(--programado); }
+  .list-card .tag.status.no-programado { color: var(--no-programado); }
+  .list-card .tag.status.por-programar { color: var(--por-programar); }
+  .list-card .tag.status.no-programar { color: var(--no-programar); }
+  .list-card .tag.status.pendiente { color: #ffb347; }
+
+  /* ── UPLOAD MODAL ── */
+  .upload-area {
+    border: 2px dashed var(--border); border-radius: 12px; padding: 2rem;
+    text-align: center; cursor: pointer; transition: all .2s; margin-bottom: 1rem;
+  }
+  .upload-area:hover, .upload-area.dragover { border-color: var(--accent); background: rgba(57,208,160,.05); }
+  .upload-area svg { color: var(--muted); margin-bottom: .5rem; }
+  .upload-area p { font-size: .85rem; color: var(--muted); }
+  .upload-area strong { color: var(--accent); }
+  .upload-result { padding: .75rem; background: var(--surface2); border-radius: 8px; font-size: .85rem; }
+
+  /* ── FLOATING CHAT BOT ── */
+  .chatbot-fab {
+    position: fixed; bottom: 1.5rem; right: 1.5rem; z-index: 995;
+    width: 50px; height: 50px; border-radius: 50%; background: var(--accent2);
+    border: none; cursor: pointer; display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 4px 16px rgba(91,140,255,.3); transition: all .3s;
+  }
+  .chatbot-fab:hover { transform: scale(1.1); box-shadow: 0 6px 20px rgba(91,140,255,.4); }
+  .chatbot-fab svg { width: 24px; height: 24px; color: white; }
+  
+  .chatbot-badge {
+    position: absolute; top: -4px; right: -4px;
+    width: 20px; height: 20px; border-radius: 50%;
+    background: var(--danger); color: white; font-size: .7rem; font-weight: 700;
+    display: flex; align-items: center; justify-content: center;
+    border: 2px solid var(--bg);
+  }
+  
+  .chatbot-panel {
+    position: fixed; bottom: 80px; right: 1.5rem; z-index: 994;
+    width: 380px; max-height: 600px; background: var(--surface);
+    border: 1px solid var(--border); border-radius: 16px;
+    box-shadow: 0 8px 32px rgba(0,0,0,.3);
+    display: flex; flex-direction: column;
+    opacity: 0; transform: translateY(20px) scale(.9); pointer-events: none;
+    transition: all .3s;
+  }
+  .chatbot-panel.open {
+    opacity: 1; transform: translateY(0) scale(1); pointer-events: all;
+  }
+  
+  .chatbot-header {
+    padding: 1rem; border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .chatbot-header h3 { font-size: .95rem; font-weight: 600; }
+  .chatbot-header button { background: none; border: none; color: var(--muted);
+    cursor: pointer; font-size: 1.2rem; padding: 0; width: 24px; height: 24px;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .chatbot-header button:hover { color: var(--text); }
+  
+  .chatbot-content {
+    flex: 1; overflow-y: auto; padding: 1rem; display: flex; flex-direction: column; gap: .8rem;
+  }
+  .chatbot-empty {
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    height: 100%; color: var(--muted); font-size: .85rem; text-align: center;
+  }
+  .chatbot-empty svg { width: 40px; height: 40px; margin-bottom: .5rem; opacity: .5; }
+  
+  .chat-message {
+    background: var(--surface2); border-left: 3px solid var(--danger);
+    padding: .75rem; border-radius: 8px; font-size: .85rem; line-height: 1.4;
+  }
+  .chat-message strong { display: block; color: var(--text); margin-bottom: .3rem; }
+  .chat-message .msg-date { font-size: .75rem; color: var(--muted); margin-top: .3rem; }
+  .chat-message .msg-detail { color: var(--muted); font-size: .8rem; margin-top: .2rem; }
+
+  /* ── STAT CHIPS ── */
+  .stats-bar { display: flex; gap: .5rem; padding: .6rem 1.5rem; background: var(--surface); border-bottom: 1px solid var(--border); flex-wrap: wrap; }
+  .stat-chip { font-size: .75rem; padding: .25rem .75rem; border-radius: 20px; font-weight: 600; display: flex; align-items: center; gap: .35rem; }
+  .stat-chip.total { background: rgba(123,130,176,.15); color: var(--muted); }
+  .stat-chip.prog { background: rgba(57,208,160,.15); color: var(--programado); }
+  .stat-chip.no-prog { background: rgba(255,95,126,.15); color: var(--no-programado); }
+  .stat-chip.no-programar { background: rgba(255,179,71,.15); color: var(--no-programar); }
+  .stat-chip.por-programar { background: rgba(123,130,176,.15); color: var(--por-programar); }
+  .stat-chip.pendiente { background: rgba(255,179,71,.12); color: #ffb347; }
+  .stat-chip.horas { background: rgba(91,140,255,.15); color: var(--accent2); }
+
+  .chart-section { flex: 1; overflow-y: auto; padding: 1.2rem 1.5rem; }
+  .chart-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1rem;
+  }
+  .chart-card {
+    background: linear-gradient(135deg, var(--surface) 0%, #1a1d2a 100%);
+    border: 1px solid rgba(255,255,255,.06);
+    border-radius: 16px;
+    padding: 1.2rem 1rem 1rem;
+    box-shadow: 0 4px 24px rgba(0,0,0,.2);
+    position: relative;
+    overflow: hidden;
+  }
+  .chart-card::before {
+    content: '';
+    position: absolute; top: 0; left: 0; right: 0; height: 2px;
+    background: linear-gradient(90deg, transparent, var(--accent2), transparent);
+    opacity: .4;
+  }
+  .chart-card h3 {
+    margin-bottom: .75rem; font-size: .85rem; font-weight: 600;
+    color: var(--muted); letter-spacing: .02em; text-transform: uppercase;
+  }
+  .chart-card canvas { width: 100% !important; height: 280px !important; }
+  .full-width { grid-column: 1 / -1; }
+  .full-width canvas { height: 200px !important; }
+
+  /* ── TOAST ── */
+  .toast {
+    position: fixed; bottom: 1.5rem; right: 1.5rem; background: var(--surface2);
+    border: 1px solid var(--border); border-radius: 10px; padding: .75rem 1.1rem;
+    font-size: .85rem; z-index: 999; transform: translateY(20px); opacity: 0;
+    transition: all .3s; pointer-events: none;
+  }
+  .toast.show { transform: translateY(0); opacity: 1; }
+  .toast.success { border-color: var(--accent); color: var(--accent); }
+  .toast.error { border-color: var(--danger); color: var(--danger); }
+
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+</style>
+<!-- Iconos: Font Awesome -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-pQfmF6Xv2q0b6IY6Zr3s2s0c1q5YQhJtV0V1Z1jQZ6s3qJYVh6Kx1n7c9Zp3wQm2qK6s3bG9x9zA3V8sV9T0==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+</head>
+<body>
+
+<header>
+  <div>
+    <h1><i class="fa-solid fa-bus" style="margin-right:.45rem"></i> Aulas Móviles <span>SENA</span></h1>
+    <div class="view-tabs">
+      <button class="view-tab active" data-view="calendar" onclick="selectView('calendar')">Calendario</button>
+      <button class="view-tab" data-view="list" onclick="selectView('list')">Listado</button>
+      <button class="view-tab" data-view="charts" onclick="selectView('charts')">Gráficas</button>
+    </div>
+  </div>
+    <div class="header-actions">
+    <button class="btn-ghost" onclick="exportReport('xlsx')"><i class="fa-solid fa-file-lines" style="margin-right:.4rem"></i>Exportar Excel</button>
+    <button class="btn-ghost" onclick="openUpload()"><i class="fa-solid fa-file-import" style="margin-right:.4rem"></i>Importar Excel</button>
+    <button class="btn-primary" onclick="openForm()"><i class="fa-solid fa-plus" style="margin-right:.45rem"></i>Nueva Sesión</button>
+  </div>
+</header>
+
+<div class="filters">
+  <label>Mes:</label>
+  <input type="month" id="inputMes" onchange="onMesChange()"/>
+  <label>Estado:</label>
+  <select id="filterEstado" onchange="renderCurrentView(); renderStats()">
+    <option value="">Todos</option>
+    <option value="PROGRAMADO">Programado</option>
+    <option value="NO PROGRAMADO">No Programado</option>
+    <option value="POR PROGRAMAR">Por Programar</option>
+    <option value="NO PROGRAMAR">No Programar</option>
+  </select>
+  <label>Buscar:</label>
+  <input type="text" id="searchInput" placeholder="Programa, instructor, municipio..." oninput="renderCurrentView(); renderStats()" class="search-input"/>
+  <div class="legend">
+    <div class="legend-item"><div class="legend-dot" style="background:var(--programado)"></div>Programado</div>
+    <div class="legend-item"><div class="legend-dot" style="background:var(--no-programado)"></div>No Programado</div>
+    <div class="legend-item"><div class="legend-dot" style="background:var(--no-programar)"></div>No Programar</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#ffb347"></div>Pendiente</div>
+    <div class="legend-item"><div class="legend-dot" style="background:var(--por-programar)"></div>Por Programar</div>
+  </div>
+</div>
+
+<div class="aulas-tabs">
+  <div class="tab ove283" onclick="selectAula('OVE283')">
+    <div class="tab-dot"></div> OVE283
+  </div>
+  <div class="tab ove265" onclick="selectAula('OVE265')">
+    <div class="tab-dot"></div> OVE265
+  </div>
+  <div class="tab oja144" onclick="selectAula('OJA144')">
+    <div class="tab-dot"></div> OJA144
+  </div>
+  <div class="tab" style="margin-left:auto" onclick="selectAula('')">
+    Todas
+  </div>
+</div>
+
+<div class="stats-bar" id="statsBar"></div>
+<div class="main">
+  <div class="calendar-section" id="calendarModule">
+    <div class="cal-nav">
+      <button onclick="prevMes()">‹</button>
+      <h2 id="calTitle"></h2>
+      <button onclick="nextMes()">›</button>
+    </div>
+    <div class="calendar-grid" id="calGrid"></div>
+  </div>
+
+  <div class="list-section hidden" id="listModule">
+    <div class="list-top">
+      <div>
+        <div class="cal-nav">
+          <h2 id="listTitle">Listado de sesiones</h2>
+        </div>
+        <span class="panel-date" id="listSummary"></span>
+      </div>
+      <div class="export-actions">
+        <button class="btn-primary" onclick="exportReport('xlsx')"><i class="fa-solid fa-file-lines" style="margin-right:.4rem"></i>Exportar Excel</button>
+        <button class="btn-ghost" onclick="exportReport('sena')"><i class="fa-solid fa-file-alt" style="margin-right:.4rem"></i>Informe SENA</button>
+      </div>
+    </div>
+    <div id="listContent"></div>
+    <div class="panel-empty" id="listEmpty" style="display:none;">
+      <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
+      <p>No hay sesiones para este filtro</p>
+    </div>
+  </div>
+
+  <div class="chart-section hidden" id="chartModule">
+    <div class="cal-nav">
+      <h2>Gráficas de trazabilidad</h2>
+    </div>
+    <div class="chart-grid">
+      <div class="chart-card">
+        <h3><i class="fa-solid fa-chart-pie" style="margin-right:.4rem"></i>Sesiones por estado</h3>
+        <canvas id="statusChart"></canvas>
+      </div>
+      <div class="chart-card">
+        <h3><i class="fa-solid fa-chart-column" style="margin-right:.4rem"></i>Horas por aula</h3>
+        <canvas id="aulaChart"></canvas>
+      </div>
+      <div class="chart-card full-width">
+        <h3><i class="fa-solid fa-chart-simple" style="margin-right:.4rem"></i>Sesiones por instructor</h3>
+        <canvas id="instructorChart"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <div class="side-panel" id="sidePanel">
+    <div class="panel-header">
+      <h3 id="panelTitle">Sesiones del día</h3>
+      <span class="panel-date" id="panelDate"></span>
+    </div>
+    <div class="panel-empty" id="panelEmpty">
+      <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
+      <p>Selecciona un día para ver las sesiones</p>
+    </div>
+    <div id="panelContent"></div>
+  </div>
+</div>
+
+<!-- MODAL FORM -->
+<div class="modal-overlay" id="formModal">
+  <div class="modal">
+    <div class="modal-header">
+      <h3 id="formTitle">Nueva Sesión</h3>
+      <button class="modal-close" onclick="closeForm()">×</button>
+    </div>
+    <div class="modal-body">
+      <input type="hidden" id="editId"/>
+      <div class="form-group full">
+        <label>Programa de Formación</label>
+        <input type="text" id="fPrograma" placeholder="Nombre del programa"/>
+      </div>
+      <div class="form-group">
+        <label>Placa Aula Móvil</label>
+        <select id="fPlaca">
+          <option value="OVE283">OVE283</option>
+          <option value="OVE265">OVE265</option>
+          <option value="OJA144">OJA144</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Ficha</label>
+        <input type="text" id="fFicha" placeholder="Nº Ficha"/>
+      </div>
+      <div class="form-group" id="singleDateGroup">
+        <label>Fecha</label>
+        <input type="date" id="fFecha" onchange="updateHolidayNotice(); updateTrimestre()"/>
+      </div>
+      <div id="recurringGroup">
+        <div class="form-group">
+          <label>Fecha Inicio</label>
+          <input type="date" id="fFechaInicio" onchange="updateHolidayNotice(); updateTrimestre()"/>
+        </div>
+        <div class="form-group">
+          <label>Fecha Fin</label>
+          <input type="date" id="fFechaFin"/>
+        </div>
+        <div class="form-group full">
+          <label>Días de la semana</label>
+          <div class="dias-container">
+            <label class="dia-check"><input type="checkbox" name="dias" value="1"/> L</label>
+            <label class="dia-check"><input type="checkbox" name="dias" value="2"/> M</label>
+            <label class="dia-check"><input type="checkbox" name="dias" value="3"/> M</label>
+            <label class="dia-check"><input type="checkbox" name="dias" value="4"/> J</label>
+            <label class="dia-check"><input type="checkbox" name="dias" value="5"/> V</label>
+            <label class="dia-check"><input type="checkbox" name="dias" value="6"/> S</label>
+            <label class="dia-check"><input type="checkbox" name="dias" value="0"/> D</label>
+          </div>
+        </div>
+      </div>
+      <div class="form-group full" id="holidayNotice" style="display:none; color: var(--danger);">
+        <label>Este día es festivo y no se debe programar.</label>
+      </div>
+      <div class="form-group">
+        <label>Municipio</label>
+        <input type="text" id="fMunicipio"/>
+      </div>
+      <div class="form-group">
+        <label>Hora Inicio</label>
+        <input type="time" id="fHoraIni"/>
+      </div>
+      <div class="form-group">
+        <label>Hora Fin</label>
+        <input type="time" id="fHoraFin"/>
+      </div>
+      <div class="form-group">
+        <label>Horas × Sesión</label>
+        <input type="number" id="fHoras" step="0.5" min="0"/>
+      </div>
+      <div class="form-group full">
+        <label>Ambiente</label>
+        <input type="text" id="fAmbiente" placeholder="IE, Institución, lugar..."/>
+      </div>
+      <div class="form-group full">
+        <label>Instructor(es)</label>
+        <input type="text" id="fInstructor"/>
+      </div>
+      <div class="form-group full">
+        <label>Conductor</label>
+        <input type="text" id="fConductor"/>
+      </div>
+      <div class="form-group">
+        <label>Estado</label>
+        <select id="fSituacion">
+          <option value="POR PROGRAMAR">Por Programar</option>
+          <option value="PROGRAMADO">Programado</option>
+          <option value="NO PROGRAMADO">No Programado</option>
+          <option value="NO PROGRAMAR">No Programar</option>
+          <option value="PENDIENTE">Pendiente</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Trimestre</label>
+        <select id="fTrim">
+          <option value="1">Trim 1</option>
+          <option value="2">Trim 2</option>
+          <option value="3">Trim 3</option>
+          <option value="4">Trim 4</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Nivel</label>
+        <select id="fNivel">
+          <option value="">Seleccionar...</option>
+          <option value="TECNICO">Técnico</option>
+          <option value="TECNOLOGO">Tecnólogo</option>
+          <option value="OPERARIO">Operario</option>
+          <option value="AUXILIAR">Auxiliar</option>
+          <option value="CURSO ESPECIAL">Curso Especial</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Gastos de Viaje</label>
+        <select id="fGastos">
+          <option value="">N/A</option>
+          <option value="SI">Sí</option>
+          <option value="NO">No</option>
+        </select>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-ghost" onclick="closeForm()">Cancelar</button>
+      <button class="btn-primary" onclick="saveSession()">Guardar</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL UPLOAD -->
+<div class="modal-overlay" id="uploadModal">
+  <div class="modal">
+    <div class="modal-header">
+      <h3>Importar Excel de Programación</h3>
+      <button class="modal-close" onclick="closeUpload()">×</button>
+    </div>
+    <div class="modal-body" style="grid-template-columns:1fr; gap:1rem;">
+      <div class="upload-area" id="uploadArea" onclick="document.getElementById('fileInput').click()"
+        ondragover="e=>{e.preventDefault();this.classList.add('dragover')}"
+        ondragleave="this.classList.remove('dragover')"
+        ondrop="handleDrop(event)">
+        <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+        <p>Arrastra aquí el archivo o <strong>haz clic para seleccionar</strong></p>
+        <p style="font-size:.75rem; margin-top:.3rem">Soporta dos formatos: programación de instructores y solicitud de matrícula (.xlsx)</p>
+        <input type="file" id="fileInput" accept=".xlsx,.xls" style="display:none" onchange="handleFile(this.files[0])"/>
+      </div>
+      <div id="uploadResult" style="display:none"></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-ghost" onclick="closeUpload()">Cerrar</button>
+      <button class="btn-primary" id="btnUpload" onclick="doUpload()" disabled>Importar</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL SELECCIONAR PLACA -->
+<div class="modal-overlay" id="selectPlacaModal">
+  <div class="modal" style="max-width: 400px;">
+    <div class="modal-header">
+      <h3>Seleccionar Aula Móvil</h3>
+    </div>
+    <div class="modal-body" style="grid-template-columns:1fr;">
+      <p style="color: var(--muted); font-size: .9rem; margin-bottom: 1rem;">
+        El archivo no especifica el aula. Selecciona a cuál aula asignar estas sesiones:
+      </p>
+      <div style="display: grid; gap: .6rem;">
+        <button class="btn-primary" style="padding: .7rem; text-align: left;" onclick="proceedUploadWithPlaca('OVE283')">
+          <strong><i class="fa-solid fa-bus" style="margin-right:.5rem"></i>OVE283</strong><br><span style="font-size: .75rem; color: rgba(255,255,255,.7);">Aula Móvil OVE283</span>
+        </button>
+        <button class="btn-primary" style="padding: .7rem; text-align: left;" onclick="proceedUploadWithPlaca('OVE265')">
+          <strong><i class="fa-solid fa-bus" style="margin-right:.5rem"></i>OVE265</strong><br><span style="font-size: .75rem; color: rgba(255,255,255,.7);">Aula Móvil OVE265</span>
+        </button>
+        <button class="btn-primary" style="padding: .7rem; text-align: left;" onclick="proceedUploadWithPlaca('OJA144')">
+          <strong><i class="fa-solid fa-bus" style="margin-right:.5rem"></i>OJA144</strong><br><span style="font-size: .75rem; color: rgba(255,255,255,.7);">Aula Móvil OJA144</span>
+        </button>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-ghost" onclick="document.getElementById('selectPlacaModal').classList.remove('open')">Cancelar</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<!-- CHATBOT FLOTANTE -->
+<div class="chatbot-panel" id="chatbotPanel">
+  <div class="chatbot-header">
+    <h3><i class="fa-solid fa-clipboard-list" style="margin-right:.45rem"></i>Recordatorios</h3>
+    <button onclick="closeChatbot()">×</button>
+  </div>
+  <div class="chatbot-content" id="chatbotContent">
+    <div class="chatbot-empty">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+      <p>No hay recordatorios pendientes</p>
+    </div>
+  </div>
+</div>
+
+<button class="chatbot-fab" id="chatbotFab" onclick="toggleChatbot()">
+  <svg viewBox="0 0 24 24" fill="currentColor"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"/></svg>
+  <div class="chatbot-badge hidden" id="chatbotBadge">0</div>
+</button>
+
+<script src="https://cdn.sheetjs.com/xlsx-latest/package/dist/xlsx.full.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+// ── ESTADO ──
+// Chart.js: defaults más amigables para tema oscuro
+if (window.Chart) {
+  try {
+    Chart.defaults.font.family = "'DM Sans', sans-serif";
+    Chart.defaults.color = getComputedStyle(document.documentElement).getPropertyValue('--text') || '#e8eaf6';
+    Chart.defaults.plugins.tooltip.backgroundColor = 'rgba(18,18,24,0.95)';
+    Chart.defaults.plugins.tooltip.titleColor = Chart.defaults.color;
+    Chart.defaults.plugins.tooltip.bodyColor = Chart.defaults.color;
+    Chart.defaults.plugins.legend.labels.color = Chart.defaults.color;
+  } catch (e) { /* no crítico */ }
+}
+let currentAula = '';
+let currentYear, currentMonth;
+let selectedDate = null;
+let currentView = 'calendar';
+let allSesiones = [];
+let uploadFile = null;
+let editingId = null;
+let chatbotMessages = [];
+let pendingUploadData = null; // para almacenar datos cuando se necesita seleccionar placa
+let statusChart = null;
+let aulaChart = null;
+let instructorChart = null;
+
+const DIAS = ['Dom','Lun','Mar','Mié','Jue','Vie','Sáb'];
+const MESES = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
+
+function normalizeStatus(value) {
+  if (!value) return 'POR PROGRAMAR';
+  const u = String(value).trim().toUpperCase();
+  if (u.includes('NO PROGRAMADO')) return 'NO PROGRAMADO';
+  if (u.includes('NO PROGRAMAR')) return 'NO PROGRAMAR';
+  if (u.includes('PENDIENTE')) return 'PENDIENTE';
+  if (u.includes('PROGRAMADO')) return 'PROGRAMADO';
+  if (u.includes('PROGRAMAR')) return 'POR PROGRAMAR';
+  return u;
+}
+
+function getSearchText() {
+  return document.getElementById('searchInput').value.trim().toLowerCase();
+}
+
+function matchesSearch(s, text) {
+  if (!text) return true;
+  const fields = [s.programa, s.instructor, s.municipio, s.placa, s.ficha, s.ambiente, s.conductor, s.nivel, s.pendientes];
+  return fields.some(f => f && String(f).toLowerCase().includes(text));
+}
+
+function applyFilters(sesiones) {
+  const text = getSearchText();
+  const estado = document.getElementById('filterEstado').value;
+  let result = sesiones;
+  if (estado) result = result.filter(s => normalizeStatus(s.situacion) === estado);
+  if (text) result = result.filter(s => matchesSearch(s, text));
+  return result;
+}
+
+function sitClass(s) {
+  const u = normalizeStatus(s);
+  if (u === 'PROGRAMADO') return 'programado';
+  if (u === 'NO PROGRAMADO') return 'no-programado';
+  if (u === 'NO PROGRAMAR') return 'no-programar';
+  if (u === 'PENDIENTE') return 'pendiente';
+  return 'por-programar';
+}
+
+const FESTIVOS = {
+  '2026-01-01': 'Año Nuevo',
+  '2026-01-12': 'Día de los Reyes Magos',
+  '2026-03-23': 'Día de San José',
+  '2026-04-02': 'Jueves Santo',
+  '2026-04-03': 'Viernes Santo',
+  '2026-05-01': 'Día del Trabajo',
+  '2026-05-18': 'Ascensión del Señor',
+  '2026-06-08': 'Corpus Christi',
+  '2026-06-15': 'Sagrado Corazón',
+  '2026-07-20': 'Día de la Independencia',
+  '2026-08-07': 'Batalla de Boyacá',
+  '2026-08-17': 'La Asunción',
+  '2026-10-12': 'Día de la Raza',
+  '2026-11-02': 'Día de Todos los Santos',
+  '2026-11-16': 'Independencia de Cartagena',
+  '2026-12-08': 'Inmaculada Concepción',
+  '2026-12-25': 'Navidad'
+};
+
+function getHolidayLabel(date) {
+  return FESTIVOS[date] || null;
+}
+
+function updateHolidayNotice() {
+  const fecha = document.getElementById('fFecha').value || document.getElementById('fFechaInicio').value;
+  const label = getHolidayLabel(fecha);
+  const notice = document.getElementById('holidayNotice');
+  if (label) {
+    notice.style.display = 'block';
+    notice.querySelector('label').textContent = `Este día es festivo (${label}) y no se debe programar.`;
+  } else {
+    notice.style.display = 'none';
+  }
+}
+
+function getTrimestre(fecha) {
+  if (!fecha) return '1';
+  const date = new Date(fecha);
+  const year = date.getFullYear();
+  const month = date.getMonth() + 1;
+  const day = date.getDate();
+  
+  if (year === 2026) {
+    if ((month === 1 && day >= 29) || (month > 1 && month < 4) || (month === 4 && day <= 14)) return '1';
+    if ((month === 4 && day >= 20) || (month > 4 && month < 7) || (month === 7 && day <= 6)) return '2';
+    if ((month === 7 && day >= 10) || (month > 7 && month < 9) || (month === 9 && day <= 23)) return '3';
+    if ((month === 9 && day >= 29) || month > 9) return '4';
+  }
+  return '1';
+}
+
+function updateTrimestre() {
+  const fecha = document.getElementById('fFecha').value || document.getElementById('fFechaInicio').value;
+  const trim = getTrimestre(fecha);
+  document.getElementById('fTrim').value = trim;
+}
+
+// ── INIT ──
+// Inicializa la aplicación al cargar la página.
+window.onload = () => {
+  const now = new Date();
+  currentYear = now.getFullYear();
+  currentMonth = now.getMonth();
+  document.getElementById('inputMes').value = `${currentYear}-${String(currentMonth+1).padStart(2,'0')}`;
+  selectAula('');
+};
+
+// Carga las sesiones desde el backend según el mes y el aula seleccionados.
+async function loadSesiones() {
+  try {
+    const desde = `${currentYear}-${String(currentMonth+1).padStart(2,'0')}-01`;
+    const lastDay = new Date(currentYear, currentMonth+1, 0).getDate();
+    const hasta = `${currentYear}-${String(currentMonth+1).padStart(2,'0')}-${lastDay}`;
+    const params = new URLSearchParams({ desde, hasta });
+    if (currentAula) params.set('placa', currentAula);
+    const r = await fetch(`/api/sesiones?${params}`);
+    allSesiones = await r.json();
+    renderCurrentView();
+    renderStats();
+    updateChatbotFromSesiones();
+  } catch(e) { showToast('Error cargando datos', 'error'); }
+}
+
+// ── CALENDARIO ──
+// Muestra u oculta los módulos según la vista activa (calendario, listado o gráficos).
+function renderCurrentView() {
+  const chartModule = document.getElementById('chartModule');
+  const calendarModule = document.getElementById('calendarModule');
+  const listModule = document.getElementById('listModule');
+  const sidePanel = document.getElementById('sidePanel');
+
+  calendarModule.classList.add('hidden');
+  listModule.classList.add('hidden');
+  chartModule.classList.add('hidden');
+  sidePanel.classList.add('hidden');
+
+  if (currentView === 'calendar') {
+    calendarModule.classList.remove('hidden');
+    sidePanel.classList.remove('hidden');
+    renderCalendar();
+    if (selectedDate) showDay(selectedDate);
+  } else if (currentView === 'list') {
+    listModule.classList.remove('hidden');
+    renderList();
+  } else if (currentView === 'charts') {
+    chartModule.classList.remove('hidden');
+    renderCharts();
+  }
+}
+
+function selectView(view) {
+  currentView = view;
+  document.querySelectorAll('.view-tab').forEach(btn => btn.classList.toggle('active', btn.dataset.view === view));
+  renderCurrentView();
+}
+
+// Renderiza la grilla de calendario con las sesiones por fecha.
+function renderCalendar() {
+  const sesiones = applyFilters(allSesiones);
+
+  // agrupar por fecha
+  const byDate = {};
+  sesiones.forEach(s => {
+    const d = s.fecha.split('T')[0];
+    if (!byDate[d]) byDate[d] = [];
+    byDate[d].push(s);
+  });
+
+  document.getElementById('calTitle').textContent = `${MESES[currentMonth]} ${currentYear}`;
+
+  const grid = document.getElementById('calGrid');
+  grid.innerHTML = DIAS.map(d => `<div class="cal-day-header">${d}</div>`).join('');
+
+  const firstDay = new Date(currentYear, currentMonth, 1).getDay();
+  const daysInMonth = new Date(currentYear, currentMonth+1, 0).getDate();
+  const prevDays = new Date(currentYear, currentMonth, 0).getDate();
+  const today = new Date().toISOString().split('T')[0];
+
+  // dias mes anterior
+  for (let i = firstDay - 1; i >= 0; i--) {
+    const day = prevDays - i;
+    const m = currentMonth === 0 ? 12 : currentMonth;
+    const y = currentMonth === 0 ? currentYear - 1 : currentYear;
+    const dateStr = `${y}-${String(m).padStart(2,'0')}-${String(day).padStart(2,'0')}`;
+    grid.innerHTML += dayHTML(day, dateStr, byDate[dateStr]||[], true);
+  }
+
+  // dias mes actual
+  for (let d = 1; d <= daysInMonth; d++) {
+    const dateStr = `${currentYear}-${String(currentMonth+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+    grid.innerHTML += dayHTML(d, dateStr, byDate[dateStr]||[], false, dateStr === today, dateStr === selectedDate);
+  }
+
+  // completar grilla
+  const total = firstDay + daysInMonth;
+  const remaining = total % 7 === 0 ? 0 : 7 - (total % 7);
+  for (let d = 1; d <= remaining; d++) {
+    const m = currentMonth === 11 ? 1 : currentMonth + 2;
+    const y = currentMonth === 11 ? currentYear + 1 : currentYear;
+    const dateStr = `${y}-${String(m).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+    grid.innerHTML += dayHTML(d, dateStr, byDate[dateStr]||[], true);
+  }
+}
+
+// Genera el HTML de un día del calendario con sus sesiones y estado visual.
+function dayHTML(num, dateStr, sesiones, otherMonth, isToday=false, isSelected=false) {
+  const holidayLabel = getHolidayLabel(dateStr);
+  const classes = ['cal-day', otherMonth?'other-month':'', isToday?'today':'', isSelected?'selected':'', holidayLabel?'holiday':''].filter(Boolean).join(' ');
+  const max = 3;
+  let pills = sesiones.slice(0,max).map(s => {
+    const cls = sitClass(s.situacion);
+    const label = s.programa ? s.programa.substring(0,22) : s.placa;
+    return `<div class="day-pill ${cls}">${label}</div>`;
+  }).join('');
+  if (sesiones.length > max) pills += `<div class="day-more">+${sesiones.length - max} más</div>`;
+  if (holidayLabel) pills += `<div class="holiday-chip">${holidayLabel}</div>`;
+  return `<div class="${classes}" onclick="selectDay('${dateStr}')">
+    <div class="day-num">${num}</div>
+    <div class="day-events">${pills}</div>
+  </div>`;
+}
+
+function selectDay(dateStr) {
+  selectedDate = dateStr;
+  renderCalendar();
+  showDay(dateStr);
+}
+
+// Muestra el panel lateral con las sesiones del día seleccionado.
+function showDay(dateStr) {
+  let ses = applyFilters(allSesiones).filter(s => s.fecha.split('T')[0] === dateStr);
+  const holidayLabel = getHolidayLabel(dateStr);
+
+  const [y, m, d] = dateStr.split('-');
+  document.getElementById('panelDate').textContent = `${d}/${m}/${y}`;
+  document.getElementById('panelTitle').textContent = holidayLabel ? `Día festivo: ${holidayLabel}` : `${ses.length} sesión${ses.length !== 1 ? 'es' : ''}`;
+
+  const empty = document.getElementById('panelEmpty');
+  const content = document.getElementById('panelContent');
+
+  if (!ses.length) {
+    empty.style.display = 'flex';
+    content.innerHTML = '';
+    empty.querySelector('p').textContent = holidayLabel ? `Este día es festivo (${holidayLabel}). No se deben programar sesiones.` : 'Selecciona un día para ver las sesiones';
+    return;
+  }
+  empty.style.display = 'none';
+
+  const warning = holidayLabel ? `<div class="session-card" style="background: rgba(255,95,126,.1); border-color: rgba(255,95,126,.25); color: var(--text);">
+      <strong>Atención:</strong> Este día es festivo (${holidayLabel}). No se debería programar en esta fecha.
+    </div>` : '';
+
+  content.innerHTML = warning + ses.map(s => {
+    const cls = sitClass(s.situacion);
+    return `<div class="session-card">
+      <div class="sc-top">
+        <div class="sc-programa">${s.programa || '—'}</div>
+        <div class="sc-badge ${cls}">${s.situacion || 'POR PROGRAMAR'}</div>
+      </div>
+      <div class="sc-meta">
+        <span><i class="fa-solid fa-bus" aria-hidden="true" style="margin-right:.35rem"></i>${s.placa}</span>
+        <span><i class="fa-solid fa-clock" aria-hidden="true" style="margin-right:.35rem"></i>${s.hora_ini||'?'} – ${s.hora_fin||'?'}</span>
+        ${s.horas ? `<span><i class="fa-solid fa-chart-simple" aria-hidden="true" style="margin-right:.35rem"></i>${s.horas}h</span>` : ''}
+        ${s.municipio ? `<span><i class="fa-solid fa-location-dot" aria-hidden="true" style="margin-right:.35rem"></i>${s.municipio}</span>` : ''}
+        ${s.ficha && s.ficha !== 'nan' ? `<span><i class="fa-solid fa-id-card" aria-hidden="true" style="margin-right:.35rem"></i>Ficha ${s.ficha}</span>` : ''}
+        ${s.instructor ? `<span><i class="fa-solid fa-user" aria-hidden="true" style="margin-right:.35rem"></i>${s.instructor}</span>` : ''}
+        ${s.conductor ? `<span><i class="fa-solid fa-car-side" aria-hidden="true" style="margin-right:.35rem"></i>${s.conductor}</span>` : ''}
+        ${s.ambiente ? `<span><i class="fa-solid fa-school" aria-hidden="true" style="margin-right:.35rem"></i>${s.ambiente}</span>` : ''}
+      </div>
+      <div class="sc-actions">
+        <button class="btn-ghost btn-sm" onclick="editSession(${s.id})"><i class="fa-solid fa-pen"></i>Editar</button>
+        <button class="btn-danger btn-sm" onclick="deleteSession(${s.id})"><i class="fa-solid fa-trash"></i>Eliminar</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function jornadaLabel(horaIni) {
+  if (!horaIni) return 'Sin jornada';
+  const hour = parseInt(horaIni.split(':')[0], 10);
+  if (hour < 12) return 'Mañana';
+  if (hour < 18) return 'Tarde';
+  return 'Noche';
+}
+
+// Renderiza la vista de listado de sesiones con filtros y agrupación por fecha.
+function renderList() {
+  let sesiones = applyFilters(allSesiones);
+  sesiones.sort((a,b) => (a.fecha || '').localeCompare(b.fecha) || (a.hora_ini || '').localeCompare(b.hora_ini));
+
+  const listContent = document.getElementById('listContent');
+  const listEmpty = document.getElementById('listEmpty');
+  const total = sesiones.length;
+  document.getElementById('listSummary').textContent = `${total} sesión${total===1?'':'es'} encontradas`;
+
+  if (!sesiones.length) {
+    listEmpty.style.display = 'flex';
+    listContent.innerHTML = '';
+    return;
+  }
+  listEmpty.style.display = 'none';
+
+  let currentDate = '';
+  const html = sesiones.map(s => {
+    const fecha = (s.fecha || '').split('T')[0];
+    const displayDate = fecha.split('-').reverse().join('/');
+    const jornada = jornadaLabel(s.hora_ini);
+    const statusClass = sitClass(s.situacion);
+    const statusLabel = normalizeStatus(s.situacion);
+    const pendingTag = s.pendientes ? 'Pendientes' : null;
+    const meta = `Horario ${s.hora_ini||'--'} - ${s.hora_fin||'--'} · ${jornada} · Aula ${s.placa || '—'}`;
+    const rawTags = [
+      { label: statusLabel, className: `status ${statusClass}` },
+      { label: `Ficha ${s.ficha || '—'}` },
+      { label: `Instructor ${s.instructor || '—'}` },
+      pendingTag ? { label: pendingTag, className: 'status pendiente' } : null
+    ].filter(Boolean);
+    const tags = rawTags.map(tag => `<span class="tag${tag.className ? ' ' + tag.className : ''}">${tag.label}</span>`).join('');
+    const heading = fecha !== currentDate ? `<div class="list-heading"><h4>${displayDate}</h4></div>` : '';
+    currentDate = fecha;
+    return `${heading}<div class="list-card">
+      <h4>${s.programa || 'Sin programa'}</h4>
+      <div class="list-meta">
+        <span><i class="fa-solid fa-bus" style="margin-right:.35rem"></i>${s.placa || '—'}</span>
+        <span><i class="fa-solid fa-clock" style="margin-right:.35rem"></i>${s.hora_ini||'--'} - ${s.hora_fin||'--'}</span>
+        <span><i class="fa-solid fa-location-dot" style="margin-right:.35rem"></i>${s.municipio || '—'}</span>
+        <span><i class="fa-solid fa-school" style="margin-right:.35rem"></i>${s.ambiente || '—'}</span>
+        <span><i class="fa-solid fa-user" style="margin-right:.35rem"></i>${s.instructor || '—'}</span>
+        <span><i class="fa-solid fa-id-card" style="margin-right:.35rem"></i>Ficha ${s.ficha || '—'}</span>
+        <span><i class="fa-solid fa-briefcase" style="margin-right:.35rem"></i>${jornada}</span>
+        <span><i class="fa-solid fa-clock-rotate-left" style="margin-right:.35rem"></i>${s.horas || '—'} h</span>
+      </div>
+      <div class="list-tags">${tags}</div>
+      <div class="list-actions">
+        <button class="btn-ghost btn-icon has-text" title="Editar sesión" onclick="editSession(${s.id})"><i class="fa-solid fa-pen"></i>Editar</button>
+        <button class="btn-danger btn-icon has-text" title="Eliminar sesión" onclick="deleteSession(${s.id})"><i class="fa-solid fa-trash"></i>Eliminar</button>
+      </div>
+    </div>`;
+  }).join('');
+  listContent.innerHTML = html;
+}
+
+// Exporta las sesiones filtradas a Excel o formato de informe SENA.
+function exportReport(format = 'xlsx') {
+  let sesiones = applyFilters(allSesiones);
+  if (currentView === 'calendar' && selectedDate) {
+    sesiones = sesiones.filter(s => (s.fecha || '').split('T')[0] === selectedDate);
+  }
+  if (!sesiones.length) {
+    showToast('No hay datos para exportar', 'error');
+    return;
+  }
+
+  const titleText = `Reporte de sesiones ${currentView === 'calendar' && selectedDate ? selectedDate : `${currentYear}-${String(currentMonth+1).padStart(2,'0')}`}`;
+  const workbook = XLSX.utils.book_new();
+  const title = [[titleText]];
+  let header;
+  let rowsData;
+
+  if (format === 'sena') {
+    header = ['Fecha', 'Aula', 'Programa', 'Ficha', 'Municipio', 'Ambiente', 'Instructor', 'Hora inicio', 'Hora fin', 'Horas', 'Estado', 'Pendientes', 'Aspirantes'];
+    rowsData = [title, [], header];
+    sesiones.forEach(s => {
+      const fecha = (s.fecha || '').split('T')[0];
+      rowsData.push([
+        fecha,
+        s.placa || '',
+        s.programa || '',
+        s.ficha || '',
+        s.municipio || '',
+        s.ambiente || '',
+        s.instructor || '',
+        s.hora_ini || '',
+        s.hora_fin || '',
+        s.horas || '',
+        s.situacion || '',
+        s.pendientes || '',
+        Array.isArray(s.aspirantes) ? s.aspirantes.map(a => a.nombre).join('; ') : ''
+      ]);
+    });
+  } else {
+    header = ['Fecha','Aula','Programa','Jornada','Horario','Estado','Instructor','Ficha','Ambiente','Municipio','Horas','Pendientes'];
+    rowsData = [title, [], header];
+    sesiones.forEach(s => {
+      const fecha = (s.fecha || '').split('T')[0];
+      const horario = `${s.hora_ini||''} - ${s.hora_fin||''}`;
+      rowsData.push([fecha, s.placa || '', s.programa || '', jornadaLabel(s.hora_ini), horario, normalizeStatus(s.situacion), s.instructor || '', s.ficha || '', s.ambiente || '', s.municipio || '', s.horas || '', s.pendientes || '']);
+    });
+  }
+
+  const horasPorAula = {};
+  const sesionesPorInstructor = {};
+  sesiones.forEach(s => {
+    const aula = s.placa || 'Sin aula';
+    horasPorAula[aula] = (horasPorAula[aula] || 0) + (parseFloat(s.horas)||0);
+    const instructor = s.instructor || 'Sin instructor';
+    sesionesPorInstructor[instructor] = (sesionesPorInstructor[instructor] || 0) + 1;
+  });
+
+  const ws = XLSX.utils.aoa_to_sheet(rowsData);
+  const summaryRows = [
+    ['RESUMEN'],
+    [],
+    ['Métrica','Valor'],
+    ['Total sesiones', sesiones.length],
+    ['Programadas', sesiones.filter(s => normalizeStatus(s.situacion)==='PROGRAMADO').length],
+    ['No programadas', sesiones.filter(s => normalizeStatus(s.situacion)==='NO PROGRAMADO').length],
+    ['No programar', sesiones.filter(s => normalizeStatus(s.situacion)==='NO PROGRAMAR').length],
+    ['Por programar', sesiones.filter(s => normalizeStatus(s.situacion)==='POR PROGRAMAR').length],
+    ['Pendientes', sesiones.filter(s => normalizeStatus(s.situacion)==='PENDIENTE' || (s.pendientes||'').trim()).length],
+    ['Horas totales', sesiones.reduce((acc, s) => acc + (parseFloat(s.horas)||0), 0)],
+    [],
+    ['Horas por aula'],
+    ['Aula', 'Horas'],
+    ...Object.entries(horasPorAula).map(([aula, valor]) => [aula, valor]),
+    [],
+    ['Sesiones por instructor'],
+    ['Instructor', 'Sesiones'],
+    ...Object.entries(sesionesPorInstructor).map(([instructor, valor]) => [instructor, valor])
+  ];
+  const summarySheet = XLSX.utils.aoa_to_sheet(summaryRows);
+  XLSX.utils.book_append_sheet(workbook, summarySheet, 'Resumen');
+  const range = XLSX.utils.decode_range(ws['!ref']);
+  for (let C = 0; C <= range.e.c; C++) {
+    const cell = ws[XLSX.utils.encode_cell({ r: 2, c: C })];
+    if (cell) cell.s = { font: { bold: true, color: { rgb: 'FFFFFFFF' } }, fill: { fgColor: { rgb: 'FF5B8CFF' } }, alignment: { horizontal: 'center' } };
+  }
+  ws['!cols'] = Array.from({ length: range.e.c + 1 }, (_, i) => ({ wpx: i === 2 ? 240 : 110 }));
+  XLSX.utils.book_append_sheet(workbook, ws, 'Sesiones');
+  const blob = new Blob([XLSX.write(workbook, { bookType: 'xlsx', type: 'array' })], { type: 'application/octet-stream' });
+  const a = document.createElement('a');
+  const suffix = format === 'sena' ? 'informe_sena' : 'sesiones';
+  const fileName = currentView === 'calendar' && selectedDate ? `reporte_${selectedDate}.xlsx` : `${suffix}_${currentYear}-${String(currentMonth+1).padStart(2,'0')}.xlsx`;
+  a.href = URL.createObjectURL(blob);
+  a.download = fileName;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(a.href);
+  showToast(`Reporte ${format === 'sena' ? 'SENA' : 'Excel'} descargado`, 'success');
+}
+
+// Actualiza los indicadores de estado rápido en la barra superior.
+function renderStats() {
+  const filtered = applyFilters(allSesiones);
+  const total = filtered.length;
+  const prog = filtered.filter(s => normalizeStatus(s.situacion) === 'PROGRAMADO').length;
+  const noprog = filtered.filter(s => normalizeStatus(s.situacion) === 'NO PROGRAMADO').length;
+  const noprogb = filtered.filter(s => normalizeStatus(s.situacion) === 'NO PROGRAMAR').length;
+  const porprog = filtered.filter(s => normalizeStatus(s.situacion) === 'POR PROGRAMAR').length;
+  const pend = filtered.filter(s => normalizeStatus(s.situacion) === 'PENDIENTE' || (s.pendientes||'').trim()).length;
+  const horas = filtered.reduce((acc, s) => acc + (parseFloat(s.horas)||0), 0);
+  document.getElementById('statsBar').innerHTML = `
+    <div class="stat-chip total"><i class="fa-solid fa-calendar-days" style="margin-right:.45rem"></i>${total} sesiones</div>
+    <div class="stat-chip prog"><i class="fa-solid fa-circle-check" style="margin-right:.45rem"></i>${prog} programadas</div>
+    <div class="stat-chip no-prog"><i class="fa-solid fa-circle-xmark" style="margin-right:.45rem"></i>${noprog} no programadas</div>
+    <div class="stat-chip no-programar"><i class="fa-solid fa-triangle-exclamation" style="margin-right:.45rem"></i>${noprogb} no programar</div>
+    <div class="stat-chip por-programar"><i class="fa-solid fa-hourglass" style="margin-right:.45rem"></i>${porprog} por programar</div>
+    <div class="stat-chip horas"><i class="fa-solid fa-stopwatch" style="margin-right:.45rem"></i>${horas.toFixed(0)}h totales</div>
+    <div class="stat-chip pendiente"><i class="fa-solid fa-circle-exclamation" style="margin-right:.45rem"></i>${pend} pendientes</div>
+  `;
+}
+
+// Plugin para mostrar total en el centro del donut
+const centerTextPlugin = {
+  id: 'centerText',
+  beforeDraw(chart) {
+    const { width, height, ctx } = chart;
+    if (chart.config.type !== 'doughnut') return;
+    ctx.save();
+    const centerX = width / 2;
+    const centerY = height / 2 - 6;
+    const total = chart.data.datasets[0].data.reduce((a, b) => a + b, 0);
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.font = '700 28px "DM Sans", sans-serif';
+    ctx.fillStyle = '#e8eaf6';
+    ctx.fillText(total, centerX, centerY - 8);
+    ctx.font = '400 11px "DM Sans", sans-serif';
+    ctx.fillStyle = '#7b82b0';
+    ctx.fillText('Total sesiones', centerX, centerY + 22);
+    ctx.restore();
+  }
+};
+
+// Función helper para crear gradientes verticales en barras
+function barGradient(ctx, chartArea, colorTop, colorBottom) {
+  if (!chartArea) return colorTop;
+  const g = ctx.createLinearGradient(0, chartArea.bottom, 0, chartArea.top);
+  g.addColorStop(0, colorBottom || colorTop + '55');
+  g.addColorStop(1, colorTop);
+  return g;
+}
+
+// Construye y muestra los gráficos de estado, horas por aula y sesiones por instructor.
+function renderCharts() {
+  let sesiones = applyFilters(allSesiones);
+
+  const statusCounts = { PROGRAMADO: 0, 'NO PROGRAMADO': 0, 'POR PROGRAMAR': 0, 'NO PROGRAMAR': 0, PENDIENTE: 0, Otros: 0 };
+  const horasPorAula = {};
+  const sesionesPorInstructor = {};
+
+  sesiones.forEach(s => {
+    const estado = normalizeStatus(s.situacion);
+    if (Object.prototype.hasOwnProperty.call(statusCounts, estado)) {
+      statusCounts[estado]++;
+    } else {
+      statusCounts.Otros++;
+    }
+    const aula = s.placa || 'Sin aula';
+    horasPorAula[aula] = (horasPorAula[aula] || 0) + (parseFloat(s.horas) || 0);
+    const iName = s.instructor || 'Sin instructor';
+    sesionesPorInstructor[iName] = (sesionesPorInstructor[iName] || 0) + 1;
+  });
+
+  // ── Donut: Sesiones por estado ──
+  const statusColors = {
+    PROGRAMADO: '#39d0a0',
+    'NO PROGRAMADO': '#ff5f7e',
+    'NO PROGRAMAR': '#ffb347',
+    'POR PROGRAMAR': '#7b82b0',
+    PENDIENTE: '#ffc107',
+    Otros: '#5b8cff'
+  };
+  const statusLabels = Object.keys(statusCounts).filter(k => statusCounts[k] > 0);
+  const statusData = {
+    labels: statusLabels,
+    datasets: [{
+      data: statusLabels.map(k => statusCounts[k]),
+      backgroundColor: statusLabels.map(k => statusColors[k]),
+      borderColor: '#0f1117',
+      borderWidth: 2,
+      hoverBorderColor: '#1a1d27',
+      hoverBorderWidth: 3,
+      borderRadius: 4,
+      spacing: 3
+    }]
+  };
+
+  const totalSesiones = sesiones.length;
+  const statusCtx = document.getElementById('statusChart').getContext('2d');
+  if (statusChart) statusChart.destroy();
+  statusChart = new Chart(statusCtx, {
+    type: 'doughnut',
+    data: statusData,
+    plugins: [centerTextPlugin],
+    options: {
+      cutout: '72%',
+      responsive: true,
+      maintainAspectRatio: false,
+      animation: {
+        animateRotate: true,
+        duration: 1000,
+        easing: 'easeOutQuart'
+      },
+      plugins: {
+        legend: {
+          position: 'bottom',
+          labels: {
+            color: '#b8bfd9',
+            font: { family: "'DM Sans', sans-serif", size: 11 },
+            padding: 14,
+            usePointStyle: true,
+            pointStyleWidth: 8
+          }
+        },
+        tooltip: {
+          backgroundColor: 'rgba(15,17,23,.95)',
+          titleFont: { family: "'DM Sans', sans-serif", size: 12, weight: '600' },
+          bodyFont: { family: "'DM Sans', sans-serif", size: 12 },
+          padding: 12,
+          cornerRadius: 10,
+          titleColor: '#e8eaf6',
+          bodyColor: '#b8bfd9',
+          borderColor: 'rgba(255,255,255,.08)',
+          borderWidth: 1,
+          callbacks: {
+            label(ctx) {
+              const total = ctx.dataset.data.reduce((a, b) => a + b, 0);
+              const pct = total > 0 ? ((ctx.parsed / total) * 100).toFixed(1) : 0;
+              return ` ${ctx.label}: ${ctx.parsed} (${pct}%)`;
+            }
+          }
+        }
+      }
+    }
+  });
+
+  // ── Barras: Horas por aula ──
+  const aulaLabels = Object.keys(horasPorAula);
+  const aulaCtx = document.getElementById('aulaChart').getContext('2d');
+  if (aulaChart) aulaChart.destroy();
+  aulaChart = new Chart(aulaCtx, {
+    type: 'bar',
+    data: {
+      labels: aulaLabels,
+      datasets: [{
+        label: 'Horas',
+        data: aulaLabels.map(a => horasPorAula[a]),
+        backgroundColor(ctx) {
+          if (!ctx.chart.chartArea) return '#5b8cff';
+          return barGradient(ctx.chart.ctx, ctx.chart.chartArea, '#5b8cff', 'rgba(91,140,255,.2)');
+        },
+        borderColor: 'transparent',
+        borderRadius: 6,
+        borderSkipped: false,
+        barPercentage: 0.55,
+        categoryPercentage: 0.7
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      animation: {
+        duration: 900,
+        easing: 'easeOutQuart'
+      },
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          backgroundColor: 'rgba(15,17,23,.95)',
+          titleFont: { family: "'DM Sans', sans-serif", size: 12, weight: '600' },
+          bodyFont: { family: "'DM Sans', sans-serif", size: 12 },
+          padding: 10,
+          cornerRadius: 8,
+          titleColor: '#e8eaf6',
+          bodyColor: '#b8bfd9',
+          borderColor: 'rgba(255,255,255,.08)',
+          borderWidth: 1,
+          callbacks: {
+            label(ctx) { return ` ${ctx.parsed.y} horas`; }
+          }
+        }
+      },
+      scales: {
+        x: {
+          ticks: { color: '#7b82b0', font: { family: "'DM Sans', sans-serif", size: 11 } },
+          grid: { display: false }
+        },
+        y: {
+          beginAtZero: true,
+          ticks: {
+            color: '#7b82b0',
+            font: { family: "'DM Sans', sans-serif", size: 11 },
+            callback(v) { return v + 'h'; }
+          },
+          grid: {
+            color: 'rgba(255,255,255,.05)',
+            drawBorder: false,
+            drawTicks: false
+          }
+        }
+      }
+    }
+  });
+
+  // ── Barras: Sesiones por instructor ──
+  const instructorEntries = Object.entries(sesionesPorInstructor)
+    .sort(([,a],[,b]) => b - a)
+    .slice(0, 10);
+  const instructorCtx = document.getElementById('instructorChart').getContext('2d');
+  if (instructorChart) instructorChart.destroy();
+  instructorChart = new Chart(instructorCtx, {
+    type: 'bar',
+    data: {
+      labels: instructorEntries.map(([name]) => name.length > 18 ? name.slice(0, 16) + '…' : name),
+      datasets: [{
+        label: 'Sesiones',
+        data: instructorEntries.map(([,count]) => count),
+        backgroundColor(ctx) {
+          if (!ctx.chart.chartArea) return '#ff9f5b';
+          return barGradient(ctx.chart.ctx, ctx.chart.chartArea, '#ff9f5b', 'rgba(255,159,91,.2)');
+        },
+        borderColor: 'transparent',
+        borderRadius: 6,
+        borderSkipped: false,
+        barPercentage: 0.5,
+        categoryPercentage: 0.75
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      indexAxis: 'y',
+      animation: {
+        duration: 900,
+        easing: 'easeOutQuart'
+      },
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          backgroundColor: 'rgba(15,17,23,.95)',
+          titleFont: { family: "'DM Sans', sans-serif", size: 12, weight: '600' },
+          bodyFont: { family: "'DM Sans', sans-serif", size: 12 },
+          padding: 10,
+          cornerRadius: 8,
+          titleColor: '#e8eaf6',
+          bodyColor: '#b8bfd9',
+          borderColor: 'rgba(255,255,255,.08)',
+          borderWidth: 1,
+          callbacks: {
+            label(ctx) { return ` ${ctx.parsed.x} sesión${ctx.parsed.x !== 1 ? 'es' : ''}`; }
+          }
+        }
+      },
+      scales: {
+        x: {
+          beginAtZero: true,
+          ticks: {
+            color: '#7b82b0',
+            font: { family: "'DM Sans', sans-serif", size: 11 },
+            stepSize: 1
+          },
+          grid: {
+            color: 'rgba(255,255,255,.05)',
+            drawBorder: false,
+            drawTicks: false
+          }
+        },
+        y: {
+          ticks: {
+            color: '#7b82b0',
+            font: { family: "'DM Sans', sans-serif", size: 11 }
+          },
+          grid: { display: false }
+        }
+      }
+    }
+  });
+}
+
+// Genera recordatorios a partir de las sesiones pendientes cargadas.
+function updateChatbotFromSesiones() {
+  const pending = allSesiones.filter(s => s.situacion === 'PENDIENTE' || (s.pendientes||'').trim());
+  const messages = pending.map(s => ({
+    id: s.id,
+    programa: s.programa || 'Sesión pendiente',
+    placa: s.placa || '—',
+    fecha: s.fecha ? s.fecha.split('T')[0] : '—',
+    pendientes: s.pendientes || 'Datos por completar',
+    instructor: s.instructor || '—'
+  }));
+  updateChatbotReminders(messages);
+}
+
+// ── NAVEGACIÓN ──
+function prevMes() {
+  currentMonth--;
+  if (currentMonth < 0) { currentMonth = 11; currentYear--; }
+  syncInputMes();
+  loadSesiones();
+}
+function nextMes() {
+  currentMonth++;
+  if (currentMonth > 11) { currentMonth = 0; currentYear++; }
+  syncInputMes();
+  loadSesiones();
+}
+function onMesChange() {
+  const v = document.getElementById('inputMes').value;
+  if (!v) return;
+  [currentYear, currentMonth] = v.split('-').map(Number);
+  currentMonth--;
+  loadSesiones();
+}
+function syncInputMes() {
+  document.getElementById('inputMes').value = `${currentYear}-${String(currentMonth+1).padStart(2,'0')}`;
+}
+function selectAula(placa) {
+  currentAula = placa;
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  if (placa) {
+    const tab = document.querySelector(`.tab.${placa.toLowerCase()}`);
+    if (tab) tab.classList.add('active');
+  } else {
+    document.querySelectorAll('.tab')[3]?.classList.add('active');
+  }
+  loadSesiones();
+}
+
+// ── FORM SESIÓN ──
+// Abre el formulario de nueva sesión con valores iniciales.
+function openForm(date) {
+  editingId = null;
+  document.getElementById('formTitle').textContent = 'Nueva Sesión';
+  document.getElementById('editId').value = '';
+  document.getElementById('fPrograma').value = '';
+  document.getElementById('fPlaca').value = currentAula || 'OVE283';
+  document.getElementById('fFicha').value = '';
+  document.getElementById('fFecha').value = '';
+  document.getElementById('singleDateGroup').style.display = 'none';
+  document.getElementById('recurringGroup').style.display = '';
+  document.getElementById('fFechaInicio').value = date || selectedDate || new Date().toISOString().split('T')[0];
+  document.getElementById('fFechaFin').value = '';
+  document.querySelectorAll('input[name="dias"]').forEach(c => c.checked = false);
+  updateHolidayNotice();
+  updateTrimestre();
+  document.getElementById('fMunicipio').value = '';
+  document.getElementById('fHoraIni').value = '';
+  document.getElementById('fHoraFin').value = '';
+  document.getElementById('fHoras').value = '';
+  document.getElementById('fAmbiente').value = '';
+  document.getElementById('fInstructor').value = '';
+  document.getElementById('fConductor').value = '';
+  document.getElementById('fSituacion').value = 'POR PROGRAMAR';
+  document.getElementById('fTrim').value = '1';
+  document.getElementById('fNivel').value = '';
+  document.getElementById('fGastos').value = '';
+  document.getElementById('formModal').classList.add('open');
+}
+
+// Carga una sesión existente para editarla.
+async function editSession(id) {
+  try {
+    const r = await fetch(`/api/sesiones/${id}`);
+    const s = await r.json();
+    editingId = id;
+    document.getElementById('formTitle').textContent = 'Editar Sesión';
+    document.getElementById('singleDateGroup').style.display = '';
+    document.getElementById('recurringGroup').style.display = 'none';
+    document.getElementById('fPrograma').value = s.programa || '';
+    document.getElementById('fPlaca').value = s.placa || 'OVE283';
+    document.getElementById('fFicha').value = s.ficha || '';
+    document.getElementById('fFecha').value = s.fecha ? s.fecha.split('T')[0] : '';
+    updateHolidayNotice();
+    updateTrimestre();
+    document.getElementById('fMunicipio').value = s.municipio || '';
+    document.getElementById('fHoraIni').value = s.hora_ini || '';
+    document.getElementById('fHoraFin').value = s.hora_fin || '';
+    document.getElementById('fHoras').value = s.horas || '';
+    document.getElementById('fAmbiente').value = s.ambiente || '';
+    document.getElementById('fInstructor').value = s.instructor || '';
+    document.getElementById('fConductor').value = s.conductor || '';
+    document.getElementById('fSituacion').value = s.situacion || 'POR PROGRAMAR';
+    document.getElementById('fNivel').value = s.nivel || '';
+    document.getElementById('fGastos').value = s.gastos || '';
+    document.getElementById('formModal').classList.add('open');
+  } catch(e) { showToast('Error cargando sesión', 'error'); }
+}
+
+function closeForm() { document.getElementById('formModal').classList.remove('open'); }
+
+function getSelectedDias() {
+  return [...document.querySelectorAll('input[name="dias"]:checked')].map(c => parseInt(c.value));
+}
+
+function generateRecurringDates(start, end, dias) {
+  const dates = [];
+  const current = new Date(start);
+  const endDate = new Date(end);
+  while (current <= endDate) {
+    if (dias.includes(current.getDay())) {
+      dates.push(current.toISOString().split('T')[0]);
+    }
+    current.setDate(current.getDate() + 1);
+  }
+  return dates;
+}
+
+// Envía el formulario de sesión al backend para crear o actualizar.
+async function saveSession() {
+  const programa = document.getElementById('fPrograma').value;
+  const placa = document.getElementById('fPlaca').value;
+  const ficha = document.getElementById('fFicha').value;
+  const municipio = document.getElementById('fMunicipio').value;
+  const hora_ini = document.getElementById('fHoraIni').value;
+  const hora_fin = document.getElementById('fHoraFin').value;
+  const horas = document.getElementById('fHoras').value;
+  const ambiente = document.getElementById('fAmbiente').value;
+  const instructor = document.getElementById('fInstructor').value;
+  const conductor = document.getElementById('fConductor').value;
+  const situacion = document.getElementById('fSituacion').value;
+  const trim = document.getElementById('fTrim').value;
+  const nivel = document.getElementById('fNivel').value;
+  const gastos = document.getElementById('fGastos').value;
+
+  // Modo edición: fecha única
+  if (editingId) {
+    const fecha = document.getElementById('fFecha').value;
+    if (!fecha) return showToast('La fecha es requerida', 'error');
+    const holidayLabel = getHolidayLabel(fecha);
+    if (holidayLabel) return showToast(`No se puede programar en día festivo: ${holidayLabel}`, 'error');
+    try {
+      const r = await fetch(`/api/sesiones/${editingId}`, {
+        method: 'PUT',
+        headers: {'Content-Type':'application/json'},
+        body: JSON.stringify({ programa, placa, ficha, fecha, municipio, hora_ini, hora_fin, horas, ambiente, instructor, conductor, situacion, trim, nivel, gastos })
+      });
+      if (!r.ok) throw new Error();
+      closeForm();
+      showToast('Sesión actualizada', 'success');
+      loadSesiones();
+    } catch(e) { showToast('Error guardando sesión', 'error'); }
+    return;
+  }
+
+  // Nueva sesión: modo recurrente
+  const fechaInicio = document.getElementById('fFechaInicio').value;
+  const fechaFin = document.getElementById('fFechaFin').value;
+  const dias = getSelectedDias();
+
+  // Si es una única fecha (sin recurrencia)
+  if (!fechaFin && !dias.length) {
+    if (!fechaInicio) return showToast('La fecha es requerida', 'error');
+    const holidayLabel = getHolidayLabel(fechaInicio);
+    if (holidayLabel) return showToast(`No se puede programar en día festivo: ${holidayLabel}`, 'error');
+    try {
+      const r = await fetch('/api/sesiones', {
+        method: 'POST',
+        headers: {'Content-Type':'application/json'},
+        body: JSON.stringify({ programa, placa, ficha, fecha: fechaInicio, municipio, hora_ini, hora_fin, horas, ambiente, instructor, conductor, situacion, trim, nivel, gastos })
+      });
+      if (!r.ok) throw new Error();
+      closeForm();
+      showToast('Sesión creada', 'success');
+      loadSesiones();
+    } catch(e) { showToast('Error guardando sesión', 'error'); }
+    return;
+  }
+
+  // Modo recurrente con fecha fin y días seleccionados
+  if (!fechaInicio || !fechaFin) return showToast('Fecha inicio y fecha fin son requeridas', 'error');
+  if (!dias.length) return showToast('Selecciona al menos un día de la semana', 'error');
+  if (fechaInicio > fechaFin) return showToast('Fecha inicio debe ser anterior a fecha fin', 'error');
+
+  const fechas = generateRecurringDates(fechaInicio, fechaFin, dias);
+  if (!fechas.length) return showToast('No hay fechas válidas en el rango seleccionado', 'error');
+
+  let creadas = 0;
+  let errores = 0;
+  for (const fecha of fechas) {
+    if (getHolidayLabel(fecha)) continue;
+    try {
+      const r = await fetch('/api/sesiones', {
+        method: 'POST',
+        headers: {'Content-Type':'application/json'},
+        body: JSON.stringify({ programa, placa, ficha, fecha, municipio, hora_ini, hora_fin, horas, ambiente, instructor, conductor, situacion, trim, nivel, gastos })
+      });
+      if (r.ok) creadas++;
+      else errores++;
+    } catch(e) { errores++; }
+  }
+
+  closeForm();
+  if (creadas > 0) showToast(`${creadas} sesiones creadas${errores ? ` (${errores} errores)` : ''}`, 'success');
+  else showToast('Error al crear sesiones', 'error');
+  loadSesiones();
+}
+
+// Elimina una sesión seleccionada.
+async function deleteSession(id) {
+  if (!confirm('¿Eliminar esta sesión?')) return;
+  try {
+    await fetch(`/api/sesiones/${id}`, { method: 'DELETE' });
+    showToast('Sesión eliminada', 'success');
+    loadSesiones();
+  } catch(e) { showToast('Error eliminando', 'error'); }
+}
+
+// ── UPLOAD ──
+// Abre el modal de subida de Excel.
+function openUpload() {
+  uploadFile = null;
+  document.getElementById('fileInput').value = '';
+  document.getElementById('uploadResult').style.display = 'none';
+  document.getElementById('btnUpload').disabled = true;
+  document.getElementById('uploadModal').classList.add('open');
+}
+function closeUpload() { document.getElementById('uploadModal').classList.remove('open'); }
+
+function handleDrop(e) {
+  e.preventDefault();
+  document.getElementById('uploadArea').classList.remove('dragover');
+  handleFile(e.dataTransfer.files[0]);
+}
+
+function handleFile(file) {
+  if (!file) return;
+  uploadFile = file;
+  document.getElementById('uploadArea').querySelector('p').innerHTML = `<i class="fa-solid fa-file-lines" style="margin-right:.45rem"></i>${file.name}`;
+  document.getElementById('btnUpload').disabled = false;
+}
+
+// Inicia el proceso de validación y subida del archivo Excel.
+async function doUpload() {
+  if (!uploadFile) return;
+  
+  // Primero, intentar hacer un parse rápido del archivo para detectar si tiene placa
+  try {
+    const arrayBuffer = await uploadFile.arrayBuffer();
+    const wb = XLSX.read(new Uint8Array(arrayBuffer), { type: 'array' });
+    const ws = wb.Sheets[wb.SheetNames[0]];
+    const data = XLSX.utils.sheet_to_json(ws, { header: 1, defval: null });
+    
+    // Buscar si hay alguna celda con palabras clave de placa
+    let hasPlaca = false;
+    const placaKeywords = ['OVE283', 'OVE265', 'OJA144', 'PLACA', 'AULA MOVIL'];
+    for (const row of data) {
+      if (row && row.some(cell => placaKeywords.some(kw => String(cell||'').toUpperCase().includes(kw)))) {
+        hasPlaca = true;
+        break;
+      }
+    }
+    
+    // Si no tiene placa explícita, mostrar modal para seleccionar
+    if (!hasPlaca) {
+      pendingUploadData = uploadFile;
+      document.getElementById('selectPlacaModal').classList.add('open');
+      return;
+    }
+  } catch(e) {
+    console.log('Error pre-procesando archivo, continuando con importación normal');
+  }
+  
+  // Proceder con la importación normal sin placa específica
+  proceedUploadWithPlaca(null);
+}
+
+// Envía el archivo al servidor, opcionalmente con placa elegida manualmente.
+async function proceedUploadWithPlaca(placa) {
+  // Cerrar modal
+  document.getElementById('selectPlacaModal').classList.remove('open');
+  
+  const file = pendingUploadData || uploadFile;
+  if (!file) return;
+  
+  const btn = document.getElementById('btnUpload');
+  btn.textContent = 'Importando...';
+  btn.disabled = true;
+  try {
+    const fd = new FormData();
+    fd.append('file', file);
+    if (placa) fd.append('placa', placa);
+    
+    const r = await fetch('/api/upload/programacion', { method: 'POST', body: fd });
+    const data = await r.json();
+    const res = document.getElementById('uploadResult');
+    res.style.display = 'block';
+    if (data.ok) {
+      let message = `<i class="fa-solid fa-circle-check" style="color:var(--accent); margin-right:.45rem"></i>Importadas ${data.inserted} de ${data.total} sesiones correctamente.`;
+      if (placa) message += ` Asignadas al aula ${placa}.`;
+      if (data.skipped) message += ` Se omitieron ${data.skipped} fechas festivas.`;
+      
+      // Actualizar chatbot con recordatorios
+      if (data.pendingDetails && data.pendingDetails.length > 0) {
+        updateChatbotReminders(data.pendingDetails);
+        message += `<br><em><i class="fa-solid fa-clipboard-list" style="margin-right:.35rem"></i>${data.pendingDetails.length} sesión(es) requieren completar datos. Revisa los recordatorios.</em>`;
+      }
+      
+      res.innerHTML = `<div class="upload-result">${message}</div>`;
+      loadSesiones();
+    } else {
+      res.innerHTML = `<div class="upload-result" style="color:var(--danger)"><i class="fa-solid fa-circle-xmark" style="margin-right:.35rem"></i>Error: ${data.error}</div>`;
+    }
+  } catch(e) {
+    document.getElementById('uploadResult').innerHTML = `<span style="color:var(--danger)"><i class="fa-solid fa-circle-xmark" style="margin-right:.35rem"></i>Error de conexión</span>`;
+    document.getElementById('uploadResult').style.display = 'block';
+  }
+  btn.textContent = 'Importar';
+  btn.disabled = false;
+  pendingUploadData = null;
+}
+
+// ── TOAST ──
+// Muestra notificaciones breves al usuario.
+function showToast(msg, type='success') {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = `toast ${type} show`;
+  setTimeout(() => t.classList.remove('show'), 3000);
+}
+
+// ── CHATBOT FLOTANTE ──
+// Abre/cierra el panel flotante de recordatorios.
+function toggleChatbot() {
+  document.getElementById('chatbotPanel').classList.toggle('open');
+}
+
+function closeChatbot() {
+  document.getElementById('chatbotPanel').classList.remove('open');
+}
+
+// Actualiza la lista de recordatorios en el chatbot flotante.
+function updateChatbotReminders(messages = []) {
+  chatbotMessages = messages;
+  const badge = document.getElementById('chatbotBadge');
+  const content = document.getElementById('chatbotContent');
+  
+  if (!messages || messages.length === 0) {
+    badge.classList.add('hidden');
+    content.innerHTML = `<div class="chatbot-empty">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+      <p>No hay recordatorios pendientes</p>
+    </div>`;
+    return;
+  }
+  
+  badge.classList.remove('hidden');
+  badge.textContent = messages.length;
+  
+  content.innerHTML = messages.map((msg, i) => `
+    <div class="chat-message" onclick="editSession(${msg.id})" style="cursor:pointer">
+      <strong><i class="fa-solid fa-thumbtack" style="margin-right:.45rem"></i>${msg.programa || 'Sesión pendiente'}</strong>
+      <div class="msg-detail"><i class="fa-solid fa-bus" style="margin-right:.35rem"></i>Aula ${msg.placa || '—'}</div>
+      <div class="msg-detail"><i class="fa-solid fa-calendar-days" style="margin-right:.35rem"></i>${msg.fecha || '—'}</div>
+      <div class="msg-detail" style="color: var(--danger); margin-top: .5rem;"><i class="fa-solid fa-triangle-exclamation" style="margin-right:.35rem"></i>Falta: ${msg.pendientes || 'Datos por completar'}</div>
+      <div class="msg-date">${msg.instructor ? `<i class="fa-solid fa-user" style="margin-right:.35rem"></i>${msg.instructor}` : 'Sin instructor'}</div>
+    </div>
+  `).join('');
+}
+
+// cerrar modales con Escape
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') { closeForm(); closeUpload(); closeChatbot(); }
+});
+</script>
+</body>
+</html>
