@@ -233,7 +233,7 @@ function findByFixedPosition(raw, label, rowIndex, labelCol = 0, valueCol) {
 // Extrae una placa de aula móvil del texto libre si aparece en la celda.
 function extractPlateFromText(text) {
   if (!text) return '';
-  const match = String(text).toUpperCase().match(/OVE\d{2,3}|OJA\d{2,3}|\bAULA\s*\w+/i);
+  const match = String(text).toUpperCase().match(/OBG\d{3}|OVE\d{2,3}|OJA\d{2,3}|\bAULA\s*\w+/i);
   return match ? match[0].replace(/^AULA\s*/i, '') : '';
 }
 

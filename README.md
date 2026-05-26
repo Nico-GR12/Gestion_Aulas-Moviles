@@ -30,7 +30,7 @@
 ### 3. Uso
 - Acceder a la URL que Railway asigna
 - Usar **Importar Excel** para cargar el archivo de programación de instructores
-- El calendario muestra las 3 aulas: OVE283, OVE265, OJA144
+- El calendario muestra las 4 aulas: OBG466, OVE283, OVE265, OJA144
 - Click en cualquier día para ver sesiones del día en el panel lateral
 - Crear/editar/eliminar sesiones manualmente
 

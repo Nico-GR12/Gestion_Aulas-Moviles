@@ -22,6 +22,7 @@
     --ove283: #5b8cff;
     --ove265: #39d0a0;
     --oja144: #ff9f5b;
+    --obg466: #e84393;
 
     --programado: #39d0a0;
     --no-programado: #ff5f7e;
@@ -84,10 +85,12 @@
   .tab.ove283.active { border-color: var(--ove283); color: var(--ove283); }
   .tab.ove265.active { border-color: var(--ove265); color: var(--ove265); }
   .tab.oja144.active { border-color: var(--oja144); color: var(--oja144); }
+  .tab.obg466.active { border-color: var(--obg466); color: var(--obg466); }
   .tab-dot { width: 8px; height: 8px; border-radius: 50%; }
   .tab.ove283 .tab-dot { background: var(--ove283); }
   .tab.ove265 .tab-dot { background: var(--ove265); }
   .tab.oja144 .tab-dot { background: var(--oja144); }
+  .tab.obg466 .tab-dot { background: var(--obg466); }
 
   /* ── MAIN LAYOUT ── */
   .main { display: flex; height: calc(100vh - 140px); overflow: hidden; }
@@ -246,7 +249,60 @@
   .list-card .tag.status.no-programar { color: var(--no-programar); }
   .list-card .tag.status.pendiente { color: #ffb347; }
 
-  /* ── UPLOAD MODAL ── */
+  /* ── INSTRUCTOR LIST ── */
+  .instructor-card { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; overflow: hidden; }
+  .instructor-card .ic-header {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 1rem 1.2rem; cursor: pointer; transition: background .15s;
+    gap: .8rem;
+  }
+  .instructor-card .ic-header:hover { background: var(--surface2); }
+  .instructor-card .ic-avatar {
+    width: 40px; height: 40px; border-radius: 50%;
+    background: var(--accent2); color: white; display: flex;
+    align-items: center; justify-content: center; font-weight: 700; font-size: 1rem;
+    flex-shrink: 0;
+  }
+  .instructor-card .ic-info { flex: 1; min-width: 0; }
+  .instructor-card .ic-info h4 { font-size: .95rem; margin-bottom: .2rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .instructor-card .ic-info .ic-count { font-size: .78rem; color: var(--muted); }
+  .instructor-card .ic-toggle {
+    background: var(--surface2); border: none; color: var(--muted);
+    width: 32px; height: 32px; border-radius: 50%; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: all .2s; font-size: .85rem; flex-shrink: 0;
+  }
+  .instructor-card .ic-toggle:hover { background: var(--accent2); color: white; }
+  .instructor-card .ic-toggle.open { transform: rotate(180deg); }
+  .instructor-card .ic-courses { border-top: 1px solid var(--border); display: none; }
+  .instructor-card .ic-courses.open { display: block; }
+  .ic-course {
+    padding: .85rem 1.2rem; border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; gap: .8rem;
+  }
+  .ic-course:last-child { border-bottom: none; }
+  .ic-course .ic-course-info { flex: 1; min-width: 0; }
+  .ic-course .ic-course-info .ic-course-title { font-size: .85rem; font-weight: 600; margin-bottom: .25rem; }
+  .ic-course .ic-course-info .ic-course-meta { font-size: .75rem; color: var(--muted); display: flex; flex-wrap: wrap; gap: .3rem .7rem; }
+  .ic-course .ic-course-info .ic-course-meta span { display: flex; align-items: center; gap: .25rem; }
+  .ic-course .btn-sm { flex-shrink: 0; }
+
+  /* ── COURSE DETAIL MODAL ── */
+  .detail-grid { display: grid; grid-template-columns: 1fr 1fr; gap: .75rem; }
+  .detail-item { display: flex; flex-direction: column; gap: .2rem; }
+  .detail-item.full { grid-column: 1 / -1; }
+  .detail-item label { font-size: .7rem; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: .05em; }
+  .detail-item span { font-size: .9rem; color: var(--text); }
+  .detail-badge {
+    display: inline-flex; align-items: center; gap: .35rem;
+    padding: .3rem .7rem; border-radius: 20px; font-size: .8rem; font-weight: 600;
+  }
+  .detail-badge.programado { background: rgba(57,208,160,.15); color: var(--programado); }
+  .detail-badge.no-programado { background: rgba(255,95,126,.15); color: var(--no-programado); }
+  .detail-badge.por-programar { background: rgba(123,130,176,.15); color: var(--por-programar); }
+  .detail-badge.no-programar { background: rgba(255,179,71,.15); color: var(--no-programar); }
+  .detail-badge.pendiente { background: rgba(255,179,71,.14); color: #ffb347; }
+
   .upload-area {
     border: 2px dashed var(--border); border-radius: 12px; padding: 2rem;
     text-align: center; cursor: pointer; transition: all .2s; margin-bottom: 1rem;
@@ -372,7 +428,7 @@
   ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
 </style>
 <!-- Iconos: Font Awesome -->
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-pQfmF6Xv2q0b6IY6Zr3s2s0c1q5YQhJtV0V1Z1jQZ6s3qJYVh6Kx1n7c9Zp3wQm2qK6s3bG9x9zA3V8sV9T0==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
 </head>
 <body>
 
@@ -403,8 +459,6 @@
     <option value="POR PROGRAMAR">Por Programar</option>
     <option value="NO PROGRAMAR">No Programar</option>
   </select>
-  <label>Buscar:</label>
-  <input type="text" id="searchInput" placeholder="Programa, instructor, municipio..." oninput="renderCurrentView(); renderStats()" class="search-input"/>
   <div class="legend">
     <div class="legend-item"><div class="legend-dot" style="background:var(--programado)"></div>Programado</div>
     <div class="legend-item"><div class="legend-dot" style="background:var(--no-programado)"></div>No Programado</div>
@@ -423,6 +477,9 @@
   </div>
   <div class="tab oja144" onclick="selectAula('OJA144')">
     <div class="tab-dot"></div> OJA144
+  </div>
+  <div class="tab obg466" onclick="selectAula('OBG466')">
+    <div class="tab-dot"></div> OBG466
   </div>
   <div class="tab" style="margin-left:auto" onclick="selectAula('')">
     Todas
@@ -512,6 +569,7 @@
           <option value="OVE283">OVE283</option>
           <option value="OVE265">OVE265</option>
           <option value="OJA144">OJA144</option>
+          <option value="OBG466">OBG466</option>
         </select>
       </div>
       <div class="form-group">
@@ -667,10 +725,29 @@
         <button class="btn-primary" style="padding: .7rem; text-align: left;" onclick="proceedUploadWithPlaca('OJA144')">
           <strong><i class="fa-solid fa-bus" style="margin-right:.5rem"></i>OJA144</strong><br><span style="font-size: .75rem; color: rgba(255,255,255,.7);">Aula Móvil OJA144</span>
         </button>
+        <button class="btn-primary" style="padding: .7rem; text-align: left;" onclick="proceedUploadWithPlaca('OBG466')">
+          <strong><i class="fa-solid fa-bus" style="margin-right:.5rem"></i>OBG466</strong><br><span style="font-size: .75rem; color: rgba(255,255,255,.7);">Aula Móvil OBG466</span>
+        </button>
       </div>
     </div>
     <div class="modal-footer">
       <button class="btn-ghost" onclick="document.getElementById('selectPlacaModal').classList.remove('open')">Cancelar</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL DETALLE CURSO -->
+<div class="modal-overlay" id="detailModal">
+  <div class="modal" style="max-width: 520px;">
+    <div class="modal-header">
+      <h3>Detalle del Curso</h3>
+      <button class="modal-close" onclick="closeDetailModal()">×</button>
+    </div>
+    <div class="modal-body" style="grid-template-columns:1fr;">
+      <div class="detail-grid" id="detailContent"></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-ghost" onclick="closeDetailModal()">Cerrar</button>
     </div>
   </div>
 </div>
@@ -739,9 +816,7 @@ function normalizeStatus(value) {
   return u;
 }
 
-function getSearchText() {
-  return document.getElementById('searchInput').value.trim().toLowerCase();
-}
+function getSearchText() { return ''; }
 
 function matchesSearch(s, text) {
   if (!text) return true;
@@ -838,9 +913,8 @@ window.onload = () => {
 // Carga las sesiones desde el backend según el mes y el aula seleccionados.
 async function loadSesiones() {
   try {
-    const desde = `${currentYear}-${String(currentMonth+1).padStart(2,'0')}-01`;
-    const lastDay = new Date(currentYear, currentMonth+1, 0).getDate();
-    const hasta = `${currentYear}-${String(currentMonth+1).padStart(2,'0')}-${lastDay}`;
+    const desde = `${currentYear}-01-01`;
+    const hasta = `${currentYear}-12-31`;
     const params = new URLSearchParams({ desde, hasta });
     if (currentAula) params.set('placa', currentAula);
     const r = await fetch(`/api/sesiones?${params}`);
@@ -1013,10 +1087,9 @@ function jornadaLabel(horaIni) {
   return 'Noche';
 }
 
-// Renderiza la vista de listado de sesiones con filtros y agrupación por fecha.
+// Renderiza la vista de listado de instructores con sus cursos.
 function renderList() {
   let sesiones = applyFilters(allSesiones);
-  sesiones.sort((a,b) => (a.fecha || '').localeCompare(b.fecha) || (a.hora_ini || '').localeCompare(b.hora_ini));
 
   const listContent = document.getElementById('listContent');
   const listEmpty = document.getElementById('listEmpty');
@@ -1030,44 +1103,163 @@ function renderList() {
   }
   listEmpty.style.display = 'none';
 
-  let currentDate = '';
-  const html = sesiones.map(s => {
-    const fecha = (s.fecha || '').split('T')[0];
-    const displayDate = fecha.split('-').reverse().join('/');
-    const jornada = jornadaLabel(s.hora_ini);
-    const statusClass = sitClass(s.situacion);
-    const statusLabel = normalizeStatus(s.situacion);
-    const pendingTag = s.pendientes ? 'Pendientes' : null;
-    const meta = `Horario ${s.hora_ini||'--'} - ${s.hora_fin||'--'} · ${jornada} · Aula ${s.placa || '—'}`;
-    const rawTags = [
-      { label: statusLabel, className: `status ${statusClass}` },
-      { label: `Ficha ${s.ficha || '—'}` },
-      { label: `Instructor ${s.instructor || '—'}` },
-      pendingTag ? { label: pendingTag, className: 'status pendiente' } : null
-    ].filter(Boolean);
-    const tags = rawTags.map(tag => `<span class="tag${tag.className ? ' ' + tag.className : ''}">${tag.label}</span>`).join('');
-    const heading = fecha !== currentDate ? `<div class="list-heading"><h4>${displayDate}</h4></div>` : '';
-    currentDate = fecha;
-    return `${heading}<div class="list-card">
-      <h4>${s.programa || 'Sin programa'}</h4>
-      <div class="list-meta">
-        <span><i class="fa-solid fa-bus" style="margin-right:.35rem"></i>${s.placa || '—'}</span>
-        <span><i class="fa-solid fa-clock" style="margin-right:.35rem"></i>${s.hora_ini||'--'} - ${s.hora_fin||'--'}</span>
-        <span><i class="fa-solid fa-location-dot" style="margin-right:.35rem"></i>${s.municipio || '—'}</span>
-        <span><i class="fa-solid fa-school" style="margin-right:.35rem"></i>${s.ambiente || '—'}</span>
-        <span><i class="fa-solid fa-user" style="margin-right:.35rem"></i>${s.instructor || '—'}</span>
-        <span><i class="fa-solid fa-id-card" style="margin-right:.35rem"></i>Ficha ${s.ficha || '—'}</span>
-        <span><i class="fa-solid fa-briefcase" style="margin-right:.35rem"></i>${jornada}</span>
-        <span><i class="fa-solid fa-clock-rotate-left" style="margin-right:.35rem"></i>${s.horas || '—'} h</span>
+  const grupos = {};
+  sesiones.forEach(s => {
+    const instr = s.instructor || 'Sin instructor';
+    if (!grupos[instr]) grupos[instr] = {};
+    const key = `${s.ficha || ''}|${s.programa || ''}`;
+    if (!grupos[instr][key]) grupos[instr][key] = [];
+    grupos[instr][key].push(s);
+  });
+
+  const totalCursosGlobal = Object.values(grupos).reduce((sum, courses) => sum + Object.keys(courses).length, 0);
+  document.getElementById('listSummary').textContent = `${totalCursosGlobal} curso${totalCursosGlobal===1?'':'s'} encontrados`;
+
+  const html = Object.entries(grupos).map(([instructor, courses]) => {
+    const courseList = Object.values(courses);
+    const totalCursos = courseList.length;
+    const initials = instructor.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase();
+    return `<div class="instructor-card">
+      <div class="ic-header" onclick="toggleInstructorCourses(this)">
+        <div class="ic-avatar">${initials}</div>
+        <div class="ic-info">
+          <h4>${instructor}</h4>
+          <div class="ic-count">${totalCursos} curso${totalCursos !== 1 ? 's' : ''}</div>
+        </div>
+        <button class="ic-toggle"><i class="fa-solid fa-chevron-down"></i></button>
       </div>
-      <div class="list-tags">${tags}</div>
-      <div class="list-actions">
-        <button class="btn-ghost btn-icon has-text" title="Editar sesión" onclick="editSession(${s.id})"><i class="fa-solid fa-pen"></i>Editar</button>
-        <button class="btn-danger btn-icon has-text" title="Eliminar sesión" onclick="deleteSession(${s.id})"><i class="fa-solid fa-trash"></i>Eliminar</button>
+      <div class="ic-courses">
+        ${courseList.map(sessions => {
+          sessions.sort((a, b) => (a.fecha || '').localeCompare(b.fecha || ''));
+          const first = sessions[0];
+          const fechas = sessions.map(x => x.fecha ? x.fecha.split('T')[0] : '').filter(Boolean).sort();
+          const fechaInicio = fechas.length ? fechas[0].split('-').reverse().join('/') : '—';
+          const fechaFin = fechas.length ? fechas[fechas.length - 1].split('-').reverse().join('/') : '—';
+          const cls = sitClass(first.situacion);
+          const label = normalizeStatus(first.situacion);
+          return `<div class="ic-course">
+            <div class="ic-course-info">
+              <div class="ic-course-title">${first.programa || 'Sin programa'} ${first.ficha ? `· Ficha ${first.ficha}` : ''}</div>
+              <div class="ic-course-meta">
+                <span><i class="fa-solid fa-calendar-days"></i>${fechaInicio} → ${fechaFin}</span>
+                <span><i class="fa-solid fa-bus"></i>${first.placa || '—'}</span>
+                <span><i class="fa-solid fa-clock"></i>${first.hora_ini||'--'} - ${first.hora_fin||'--'}</span>
+                <span><i class="fa-solid fa-clock-rotate-left"></i>${first.horas || '—'}h</span>
+                <span><i class="fa-solid fa-location-dot"></i>${first.municipio || '—'}</span>
+                <span class="tag status ${cls}">${label}</span>
+              </div>
+            </div>
+            <button class="btn-ghost btn-sm" onclick="showSessionDetail(${first.id})"><i class="fa-solid fa-eye"></i>Ver más</button>
+          </div>`;
+        }).join('')}
       </div>
     </div>`;
   }).join('');
   listContent.innerHTML = html;
+}
+
+function toggleInstructorCourses(header) {
+  const card = header.closest('.instructor-card');
+  const courses = card.querySelector('.ic-courses');
+  const toggle = card.querySelector('.ic-toggle');
+  courses.classList.toggle('open');
+  toggle.classList.toggle('open');
+}
+
+function showSessionDetail(id) {
+  const s = allSesiones.find(x => Number(x.id) === Number(id));
+  if (!s) { showToast('No se encontró la sesión', 'error'); return; }
+  const cls = sitClass(s.situacion);
+  const label = normalizeStatus(s.situacion);
+
+  const fechas = allSesiones
+    .filter(x => x.ficha === s.ficha && x.instructor === s.instructor && x.programa === s.programa)
+    .map(x => x.fecha ? x.fecha.split('T')[0] : '')
+    .filter(Boolean)
+    .sort();
+  const fechaInicio = fechas.length ? fechas[0].split('-').reverse().join('/') : '—';
+  const fechaFin = fechas.length ? fechas[fechas.length - 1].split('-').reverse().join('/') : '—';
+
+  const html = `
+    <div class="detail-item full">
+      <label>Programa</label>
+      <span>${s.programa || '—'}</span>
+    </div>
+    <div class="detail-item">
+      <label>Fecha Inicio</label>
+      <span>${fechaInicio}</span>
+    </div>
+    <div class="detail-item">
+      <label>Fecha Fin</label>
+      <span>${fechaFin}</span>
+    </div>
+    <div class="detail-item">
+      <label>Jornada</label>
+      <span>${jornadaLabel(s.hora_ini)}</span>
+    </div>
+    <div class="detail-item">
+      <label>Hora Inicio</label>
+      <span>${s.hora_ini || '—'}</span>
+    </div>
+    <div class="detail-item">
+      <label>Hora Fin</label>
+      <span>${s.hora_fin || '—'}</span>
+    </div>
+    <div class="detail-item">
+      <label>Horas</label>
+      <span>${s.horas || '—'} h</span>
+    </div>
+    <div class="detail-item">
+      <label>Lugar / Municipio</label>
+      <span>${s.municipio || '—'}</span>
+    </div>
+    <div class="detail-item">
+      <label>Ambiente</label>
+      <span>${s.ambiente || '—'}</span>
+    </div>
+    <div class="detail-item">
+      <label>Aula Móvil</label>
+      <span>${s.placa || '—'}</span>
+    </div>
+    <div class="detail-item">
+      <label>Ficha</label>
+      <span>${s.ficha || '—'}</span>
+    </div>
+    <div class="detail-item">
+      <label>Instructor</label>
+      <span>${s.instructor || '—'}</span>
+    </div>
+    <div class="detail-item">
+      <label>Conductor</label>
+      <span>${s.conductor || '—'}</span>
+    </div>
+    <div class="detail-item">
+      <label>Estado</label>
+      <span class="detail-badge ${cls}">${label}</span>
+    </div>
+    <div class="detail-item">
+      <label>Trimestre</label>
+      <span>${s.trim || '—'}</span>
+    </div>
+    <div class="detail-item">
+      <label>Nivel</label>
+      <span>${s.nivel || '—'}</span>
+    </div>
+    <div class="detail-item">
+      <label>Gastos de Viaje</label>
+      <span>${s.gastos || 'N/A'}</span>
+    </div>
+    ${s.pendientes ? `<div class="detail-item full">
+      <label>Pendientes</label>
+      <span style="color: var(--danger)">${s.pendientes}</span>
+    </div>` : ''}
+  `;
+  document.getElementById('detailContent').innerHTML = html;
+  document.getElementById('detailModal').classList.add('open');
+}
+
+function closeDetailModal() {
+  document.getElementById('detailModal').classList.remove('open');
 }
 
 // Exporta las sesiones filtradas a Excel o formato de informe SENA.
@@ -1476,22 +1668,26 @@ function updateChatbotFromSesiones() {
 // ── NAVEGACIÓN ──
 function prevMes() {
   currentMonth--;
-  if (currentMonth < 0) { currentMonth = 11; currentYear--; }
+  if (currentMonth < 0) { currentMonth = 11; currentYear--; loadSesiones(); return; }
   syncInputMes();
-  loadSesiones();
+  renderCurrentView();
+  renderStats();
 }
 function nextMes() {
   currentMonth++;
-  if (currentMonth > 11) { currentMonth = 0; currentYear++; }
+  if (currentMonth > 11) { currentMonth = 0; currentYear++; loadSesiones(); return; }
   syncInputMes();
-  loadSesiones();
+  renderCurrentView();
+  renderStats();
 }
 function onMesChange() {
   const v = document.getElementById('inputMes').value;
   if (!v) return;
-  [currentYear, currentMonth] = v.split('-').map(Number);
-  currentMonth--;
-  loadSesiones();
+  const [year, month] = v.split('-').map(Number);
+  if (year !== currentYear) { currentYear = year; currentMonth = month - 1; loadSesiones(); return; }
+  currentMonth = month - 1;
+  renderCurrentView();
+  renderStats();
 }
 function syncInputMes() {
   document.getElementById('inputMes').value = `${currentYear}-${String(currentMonth+1).padStart(2,'0')}`;
@@ -1724,7 +1920,7 @@ async function doUpload() {
     
     // Buscar si hay alguna celda con palabras clave de placa
     let hasPlaca = false;
-    const placaKeywords = ['OVE283', 'OVE265', 'OJA144', 'PLACA', 'AULA MOVIL'];
+    const placaKeywords = ['OBG466', 'OVE283', 'OVE265', 'OJA144', 'PLACA', 'AULA MOVIL'];
     for (const row of data) {
       if (row && row.some(cell => placaKeywords.some(kw => String(cell||'').toUpperCase().includes(kw)))) {
         hasPlaca = true;
@@ -1841,7 +2037,7 @@ function updateChatbotReminders(messages = []) {
 
 // cerrar modales con Escape
 document.addEventListener('keydown', e => {
-  if (e.key === 'Escape') { closeForm(); closeUpload(); closeChatbot(); }
+  if (e.key === 'Escape') { closeForm(); closeUpload(); closeChatbot(); closeDetailModal(); }
 });
 </script>
 </body>
