@@ -1721,7 +1721,7 @@ async function loadConductores() {
 }
 
 // Abre el formulario de nueva sesión con valores iniciales.
-function openForm(date) {
+async function openForm(date) {
   editingId = null;
   document.getElementById('formTitle').textContent = 'Nueva Sesión';
   document.getElementById('editId').value = '';
@@ -1747,7 +1747,7 @@ function openForm(date) {
   document.getElementById('fTrim').value = '1';
   document.getElementById('fNivel').value = '';
   document.getElementById('fGastos').value = '';
-  loadConductores();
+  await loadConductores();
   document.getElementById('formModal').classList.add('open');
 }
 
