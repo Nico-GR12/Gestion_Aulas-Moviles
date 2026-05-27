@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { pool, findOrCreateAula, findOrCreateInstructor, findOrCreateMunicipio, getSessionById } = require('../db');
+const { pool, findOrCreateAula, findOrCreateInstructor, findOrCreateMunicipio, getSessionById, getConductores } = require('../db');
 const { getHolidayLabel } = require('../lib/holidays');
 
 function normalizeSituacion(v) {
@@ -66,6 +66,16 @@ async function buildSessionsQuery(filters = {}) {
   sql += ' ORDER BY p.fecha_inicio, p.hora_ini';
   return { sql, params };
 }
+
+// GET /api/conductores
+router.get('/conductores', async (req, res) => {
+  try {
+    const conductores = await getConductores();
+    res.json(conductores);
+  } catch (e) {
+    res.status(500).json({ error: e.message });
+  }
+});
 
 // GET /api/sesiones?desde=2026-01-01&hasta=2026-12-31&placa=OVE283
 router.get('/', async (req, res) => {

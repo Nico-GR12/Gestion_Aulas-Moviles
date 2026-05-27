@@ -298,6 +298,13 @@ async function getSessionById(id) {
   return rows[0];
 }
 
+async function getConductores() {
+  const { rows } = await pool.query(
+    'SELECT id, nombre, cedula, email, activo FROM conductores ORDER BY nombre'
+  );
+  return rows;
+}
+
 module.exports = {
   pool,
   initDB,
@@ -305,5 +312,6 @@ module.exports = {
   findOrCreateConductor,
   findOrCreateInstructor,
   findOrCreateMunicipio,
-  getSessionById
+  getSessionById,
+  getConductores
 };

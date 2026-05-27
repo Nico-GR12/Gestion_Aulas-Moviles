@@ -631,7 +631,9 @@
       </div>
       <div class="form-group full">
         <label>Conductor</label>
-        <input type="text" id="fConductor"/>
+        <select id="fConductor">
+          <option value="">Seleccionar conductor...</option>
+        </select>
       </div>
       <div class="form-group">
         <label>Estado</label>
@@ -1705,6 +1707,19 @@ function selectAula(placa) {
 }
 
 // ── FORM SESIÓN ──
+// Carga la lista de conductores desde el backend.
+async function loadConductores() {
+  try {
+    const r = await fetch('/api/conductores');
+    const conductores = await r.json();
+    const select = document.getElementById('fConductor');
+    const current = select.value;
+    select.innerHTML = '<option value="">Seleccionar conductor...</option>' +
+      conductores.map(c => `<option value="${c.nombre}">${c.nombre}</option>`).join('');
+    if (current) select.value = current;
+  } catch(e) { /* silencioso */ }
+}
+
 // Abre el formulario de nueva sesión con valores iniciales.
 function openForm(date) {
   editingId = null;
@@ -1732,6 +1747,7 @@ function openForm(date) {
   document.getElementById('fTrim').value = '1';
   document.getElementById('fNivel').value = '';
   document.getElementById('fGastos').value = '';
+  loadConductores();
   document.getElementById('formModal').classList.add('open');
 }
 
@@ -1756,6 +1772,7 @@ async function editSession(id) {
     document.getElementById('fHoras').value = s.horas || '';
     document.getElementById('fAmbiente').value = s.ambiente || '';
     document.getElementById('fInstructor').value = s.instructor || '';
+    await loadConductores();
     document.getElementById('fConductor').value = s.conductor || '';
     document.getElementById('fSituacion').value = s.situacion || 'POR PROGRAMAR';
     document.getElementById('fNivel').value = s.nivel || '';
