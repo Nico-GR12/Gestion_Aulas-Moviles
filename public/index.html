@@ -1710,7 +1710,7 @@ function selectAula(placa) {
 // Carga la lista de conductores desde el backend.
 async function loadConductores() {
   try {
-    const r = await fetch('/api/conductores');
+    const r = await fetch('/api/sesiones/conductores');
     const conductores = await r.json();
     const select = document.getElementById('fConductor');
     const current = select.value;
